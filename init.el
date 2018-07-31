@@ -1,11 +1,6 @@
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(package-initialize)
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file 'noerror)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(eval-when-compile
-  (require 'use-package))
+(load-file "~/.emacs.d/configs/repositories.el")
+(load-file "~/.emacs.d/configs/options.el")
+(load-file "~/.emacs.d/configs/packages.el")

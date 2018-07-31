@@ -1,0 +1,9 @@
+;;; -*- coding: utf-8 -*-
+(("/home/vasy/.emacs.d/init.el" . 71)
+ ("/home/vasy/.emacs.d/"
+  (dired-filename . "/home/vasy/.emacs.d/configs"))
+ ("/home/vasy/.emacs.d/configs/repositories.el" . 305)
+ ("/home/vasy/.emacs.d/configs/packages.el" . 189)
+ ("/home/vasy/.emacs.d/configs/"
+  (dired-filename . "/home/vasy/.emacs.d/configs/options.el"))
+ ("/home/vasy/.emacs.d/configs/options.el" . 2168))
