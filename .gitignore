@@ -1,5 +1,5 @@
-~/.enacs.d/elpa/
-~/.emacs.d/.cache
-~/.emacs.d/ido*
-~.emacs.d/places
-~/.emacs.d/recentf
+elpa/
+.cache
+ido*
+places
+recentf
