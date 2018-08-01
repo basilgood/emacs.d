@@ -1,5 +1,5 @@
-elpa/
-.cache
-ido*
-places
-recentf
+/elpa/
+/.cache
+/ido*
+/places
+/recentf
