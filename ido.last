@@ -9,22 +9,27 @@
 ;; ----- ido-work-directory-list -----
 (
  "/home/vasy/.emacs.d/configs/"
+ "/home/vasy/.emacs.d/"
  "/home/vasy/"
 )
 
 ;; ----- ido-work-file-list -----
 (
  "options.el"
+ "packages.el"
+ "init.el"
  "CV_Luta_Vasile_ro.pdf"
 )
 
 ;; ----- ido-dir-file-cache -----
 (
- ("/home/vasy/.emacs.d/" (23391 63318 559841 278000) "places" "ido.last" "../" "configs/" ".git/" "custom.el" "auto-save-list/" "init.el" "elpa/" "./")
+ ("/home/vasy/.emacs.d/configs/" (23392 53542 982822 60000) "../" "options.el" "packages.el" "repositories.el" "./")
 
- ("/home/vasy/.emacs.d/configs/" (23391 62712 64404 307000) "../" "options.el" "packages.el" "repositories.el" "./")
+ ("/home/vasy/.emacs.d/" (23392 52965 606209 3000) "places" "ido.last" "../" "configs/" "tmp/" ".git/" "custom.el" "auto-save-list/" "init.el" "elpa/" "./" ".cache/")
 
- ("/home/vasy/" (23391 36991 676990 698000) ".bash_logout" ".npm/" ".terminfo/" ".ansible/" ".zcompdump" "#vim.sh#" "Menlo-Powerline.otf" ".zgen/" ".viminfo" ".profile" "Videos/" ".zcompdump-merlin-5.1.1" ".zgen-setup" ".promptitude/" "Templates/" "Downloads/" ".pureline.conf" "../" ".vscode/" ".tmux.conf" "big.js-master.zip" "big.js-master/" "Projects/" ".yarn/" ".wget-hsts" ".zsh_aliases" ".ansible_galaxy" ".bashpower.sh" ".emacs.d/" "fzy_0.9-1_amd64.deb" ".rustup/" ".gnome/" "vimbak/" ".gitconfig" ".sudo_as_admin_successful" ".dbus/" "snap/" ".config/" ".pki/" ".zsh_history" ".ssh/" "pureline/" ".Xauthority" "global-6.4/" "emacsd/" ".xsession-errors" ".local/" ".multirust/" ".gtkrc-2.0" "intretinere.txt" ".bashrc" "global-6.4.tar.gz" ".cargo/" "Music/" "vim.sh" ".gem/" ".LfCache/" "Pictures/" ".gconf/" "CV_Luta_Vasile_ro.pdf" ".kde/" "Public/" ".gnupg/" ".vim/" ".bash_history" "todo.org" ".mozilla/" "Desktop/" ".zshrc" ".zsh/" "emacsd1/" ".yarnrc" ".vagrant.d/" ".powerbash.sh" ".zsh_functions" ".tags/" "Documents/" "./" ".cache/" ".n/" "xterm-256color-italic" ".NERDTreeBookmarks")
+ ("/home/vasy/.emacs.d/tmp/" (23392 48777 887335 472000) "../" "./")
+
+ ("/home/vasy/" (23392 40803 730109 785000) ".bash_logout" ".npm/" ".terminfo/" ".ansible/" ".zcompdump" "#vim.sh#" "Menlo-Powerline.otf" ".zgen/" ".viminfo" ".profile" "Videos/" ".zcompdump-merlin-5.1.1" ".zgen-setup" ".promptitude/" "Templates/" "Downloads/" ".pureline.conf" "../" ".vscode/" ".tmux.conf" "big.js-master.zip" "big.js-master/" "Projects/" ".yarn/" ".wget-hsts" ".zsh_aliases" ".ansible_galaxy" ".bashpower.sh" ".emacs.d/" "fzy_0.9-1_amd64.deb" ".rustup/" ".gnome/" "vimbak/" ".gitconfig" ".sudo_as_admin_successful" ".dbus/" "snap/" ".config/" ".pki/" ".zsh_history" ".ssh/" "pureline/" ".Xauthority" "global-6.4/" "emacsd/" ".xsession-errors" ".local/" ".multirust/" ".gtkrc-2.0" "intretinere.txt" ".bashrc" "global-6.4.tar.gz" ".cargo/" "Music/" "vim.sh" ".gem/" ".LfCache/" "Pictures/" ".gconf/" "CV_Luta_Vasile_ro.pdf" ".kde/" "Public/" ".gnupg/" ".vim/" ".bash_history" "todo.org" ".mozilla/" "Desktop/" ".zshrc" ".zsh/" "emacsd1/" ".yarnrc" ".vagrant.d/" ".powerbash.sh" ".zsh_functions" ".tags/" "Documents/" "./" ".cache/" ".n/" "xterm-256color-italic" ".NERDTreeBookmarks")
 )
 
 ;; ----- ido-unc-hosts-cache -----

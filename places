@@ -1,9 +1,26 @@
 ;;; -*- coding: utf-8 -*-
-(("/home/vasy/.emacs.d/init.el" . 71)
- ("/home/vasy/.emacs.d/"
+(("/home/vasy/.emacs.d/"
   (dired-filename . "/home/vasy/.emacs.d/configs"))
- ("/home/vasy/.emacs.d/configs/repositories.el" . 305)
- ("/home/vasy/.emacs.d/configs/packages.el" . 189)
+ ("/home/vasy/.emacs.d/configs/packages.el" . 4842)
  ("/home/vasy/.emacs.d/configs/"
-  (dired-filename . "/home/vasy/.emacs.d/configs/options.el"))
- ("/home/vasy/.emacs.d/configs/options.el" . 2168))
+  (dired-filename . "/home/vasy/.emacs.d/configs/packages.el"))
+ ("/home/vasy/.emacs.d/recentf" . 715)
+ ("/home/vasy/.emacs.d/elpa/magit-20180731.2119/magit-autoloads.el" . 82059)
+ ("/home/vasy/.emacs.d/elpa/ghub-20180725.2122/ghub-autoloads.el" . 1103)
+ ("/home/vasy/.emacs.d/elpa/git-commit-20180730.2140/git-commit-autoloads.el" . 1419)
+ ("/home/vasy/.emacs.d/elpa/magit-popup-20180726.2037/magit-popup-autoloads.el" . 492)
+ ("/home/vasy/.emacs.d/elpa/with-editor-20180726.2044/with-editor-autoloads.el" . 3403)
+ ("/home/vasy/.emacs.d/elpa/restart-emacs-20180601.1031/restart-emacs-autoloads.el" . 1317)
+ ("/home/vasy/.emacs.d/elpa/diminish-20170419.1736/diminish-autoloads.el" . 2371)
+ ("/home/vasy/.emacs.d/configs/repositories.el" . 307)
+ ("/home/vasy/.emacs.d/elpa/helm-swoop-20180215.1154/helm-swoop-autoloads.el" . 2226)
+ ("/home/vasy/.emacs.d/elpa/helm-20180730.1818/helm-autoloads.el" . 34216)
+ ("/home/vasy/.emacs.d/elpa/popup-20160709.1429/popup-autoloads.el" . 392)
+ ("/home/vasy/.emacs.d/elpa/helm-core-20180712.837/helm-core-autoloads.el" . 6852)
+ ("/home/vasy/.emacs.d/elpa/async-20180527.1730/async-autoloads.el" . 5296)
+ ("/home/vasy/.emacs.d/configs/options.el" . 588)
+ ("/home/vasy/.emacs.d/ido.last" . 1894)
+ ("/home/vasy/.emacs.d/elpa/ivy-20180731.1520/ivy-autoloads.el" . 4443)
+ ("/home/vasy/.emacs.d/.cache/"
+  (dired-filename . "/home/vasy/.emacs.d/.cache/.."))
+ ("/home/vasy/.emacs.d/init.el" . 71))
