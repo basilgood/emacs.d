@@ -1,3 +1,5 @@
+(setq inhibit-startup-message t)
+
 (if (window-system)
     (set-frame-font "Monospace 11"))
 
@@ -6,68 +8,71 @@
       (setq frame-title-format '(buffer-file-name "%@%b%*"))
       (tooltip-mode -1)
       (mouse-wheel-mode t)
-  (menu-bar-mode -1)))
+      (menu-bar-mode -1)
+      (tool-bar-mode -1)
+      (scroll-bar-mode -1)))
 
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
+(setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+
+(when window-system (add-hook 'prog-mode-hook 'hl-line-mode))
+
 (blink-cursor-mode -1)
 (setq-default cursor-type '(bar . 2))
-(global-hl-line-mode t)
+(setq ring-bell-function 'ignore)
+
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+(setq scroll-conservatively 100)
+
+(setq large-file-warning-threshold 100000000)
+
+(setq-default indent-tabs-mode nil
+  tab-width 2)
+
 (delete-selection-mode t)
-(transient-mark-mode t)
-(size-indication-mode t)
-(show-paren-mode t)
-(column-number-mode t)
-(save-place-mode t)
+
 (global-auto-revert-mode t)
-;; (ido-mode t)
+
+(setq hippie-expand-try-functions-list '(try-expand-dabbrev
+                                          try-expand-dabbrev-all-buffers
+                                          try-expand-dabbrev-from-kill
+                                          try-complete-file-name-partially
+                                          try-complete-file-name
+                                          try-expand-all-abbrevs
+                                          try-expand-list
+                                          try-expand-line
+                                          try-complete-lisp-symbol-partially
+                                          try-complete-lisp-symbol))
+
+(windmove-default-keybindings)
+
 (global-display-line-numbers-mode)
+
+(save-place-mode 1)
+
+(recentf-mode 1)
+(setq recentf-max-menu-items 15
+  recentf-max-saved-items 50
+  recentf-auto-cleanup 'never)
+(global-set-key "\C-x\ \C-r" 'recentf-open-files)
+
+(show-paren-mode t)
 
 (add-hook 'after-init-hook 'global-whitespace-mode)
 (setq whitespace-style (list 'space-mark 'tab-mark 'newline-mark))
 
-(setq debug-on-error t
-      gc-cons-threshold 50000000
-      large-file-warning-threshold 100000000
-      backup-inhibited t
-      make-backup-files nil
-      auto-save-default nil
-      auto-save-list-file-prefix nil
-      load-prefer-newer t
-      sentence-end-double-space nil
-      initial-scratch-message (format ";; Scratch - Started on %s\n\n" (current-time-string))
-      inhibit-startup-message t
-      inhibit-splash-screen t
-      require-final-newline t
-      next-line-add-newlines nil
-      show-trailing-whitespace t
-      xterm-mouse-mode t
-      diff-switches "-u"
-      cua-mode nil
-      cua-auto-tabify-rectangles nil
-      vc-follow-symlinks t
-      gdb-many-windows t
-      uniquify-buffer-name-style 'forward uniquify-separator "/")
+(setq sentence-end-double-space nil)
 
-(setq redisplay-dont-pause t
-  scroll-margin 1
-  scroll-step 1
-  scroll-conservatively 10000
-  scroll-preserve-screen-position 1)
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+(put 'narrow-to-defun 'disabled nil)
 
-(setq-default indent-tabs-mode nil
-              tab-width 2)
-
-(setq tab-always-indent 'complete)
-
-(defalias 'yes-or-no-p 'y-or-n-p)
-
-(set-charset-priority 'unicode)
-(setq locale-coding-system 'utf-8)
-(set-language-environment 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-selection-coding-system 'utf-8)
-(prefer-coding-system 'utf-8)
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
