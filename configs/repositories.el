@@ -1,15 +1,3 @@
-;; (require 'package)
-;; (setq package-enable-at-startup nil)
-;; (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-;; (package-initialize)
-
-;; (unless (package-installed-p 'use-package)
-;;   (package-refresh-contents)
-;;   (package-install 'use-package))
-
-;; (eval-when-compile
-;;   (require 'use-package))
-
 ;;; This fixed garbage collection, makes emacs start up faster
 (setq gc-cons-threshold 402653184
       gc-cons-percentage 0.6)

@@ -7,6 +7,8 @@
   :diminish auto-fill-function
   :diminish subword-mode)
 
+(use-package bind-key :ensure t)
+
 (use-package editorconfig
   :ensure t
   :config
@@ -48,3 +50,13 @@
   :config
   (volatile-highlights-mode)
   (diminish 'volatile-highlights-mode))
+
+(use-package multiple-cursors
+  :ensure t
+  :bind (
+          ("M-3" . mc/mark-next-like-this)
+          ("M-4" . mc/mark-previous-like-this)
+          :map ctl-x-map
+          ("\C-m" . mc/mark-all-dwim)
+          ("<return>" . mule-keymap)
+          ))
