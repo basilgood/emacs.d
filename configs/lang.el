@@ -61,4 +61,8 @@
   :ensure t
   :mode "\\.scss\\'")
 
+(use-package coffee-mode
+  :ensure t
+  :mode "\\.coffee$\\'")
+
 ;;; lang.el ends here

@@ -33,9 +33,14 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(setq scroll-conservatively 100)
-(setq hscroll-margin 0)
-(setq hscroll-step 1)
+(setq redisplay-dont-pause t
+  scroll-margin 1
+  scroll-step 1
+  scroll-conservatively 100
+  scroll-preserve-screen-position 1
+  jit-lock-defer-time 0.05
+  font-lock-support-mode 'jit-lock-mode)
+(setq-default scroll-up-aggressively 0.01 scroll-down-aggressively 0.01)
 
 (setq large-file-warning-threshold 100000000)
 

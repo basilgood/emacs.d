@@ -13,6 +13,7 @@
 (use-package bind-key :ensure t)
 
 (use-package editorconfig
+  :diminish (editorconfig-mode ."EC")
   :ensure t
   :config
   (editorconfig-mode t))
@@ -66,7 +67,6 @@
   (setq save-abbrevs 'silently)
   (setq-default abbrev-mode t))
 
-
 (use-package uniquify
 :config
 (setq uniquify-buffer-name-style 'post-forward)
@@ -119,5 +119,10 @@
     (define-fringe-bitmap 'git-gutter-fr:deleted
       [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
       nil nil 'center)))
+
+(use-package flex-autopair
+  :ensure t
+  :config
+  (flex-autopair-mode))
 
 ;;; packages.el ends here
