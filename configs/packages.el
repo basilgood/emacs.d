@@ -1,22 +1,41 @@
+;;; package --- all packages
+;;; commentary:
+;;; code:
+
 (use-package diminish
   :ensure t
   :demand t
   :diminish (visual-line-mode . "ω")
   :diminish hs-minor-mode
   :diminish abbrev-mode
-  :diminish auto-fill-function
-  :diminish subword-mode)
+  :diminish auto-fill-function)
 
 (use-package bind-key :ensure t)
 
 (use-package editorconfig
   :ensure t
   :config
-  (editorconfig-mode 1))
+  (editorconfig-mode t))
+
+(use-package subword
+  :diminish subword-mode
+  :init
+  (global-subword-mode)
+)
 
 (use-package flyspell
   :diminish (flyspell-mode . "φ")
-  :bind* (("M-m ] s" . flyspell-goto-next-error)))
+  :config
+  (setq ispell-program-name "aspell" ; use aspell instead of ispell
+        ispell-extra-args '("--sug-mode=ultra"))
+  (add-hook 'text-mode-hook #'flyspell-mode)
+  (add-hook 'prog-mode-hook #'flyspell-prog-mode))
+
+(use-package flycheck
+  :ensure t
+  :defer 5
+  :config
+  (global-flycheck-mode 1))
 
 (use-package restart-emacs
   :ensure t
@@ -38,9 +57,19 @@
   :config
     (which-key-mode))
 
+(use-package expand-region
+  :ensure t
+  :bind ("C-=" . er/expand-region))
+
+(use-package abbrev
+  :config
+  (setq save-abbrevs 'silently)
+  (setq-default abbrev-mode t))
+
+
 (use-package uniquify
 :config
-(setq uniquify-buffer-name-style 'forward)
+(setq uniquify-buffer-name-style 'post-forward)
 (setq uniquify-separator "/")
 (setq uniquify-after-kill-buffer-p t)
 (setq uniquify-ignore-buffers-re "^\\*"))
@@ -60,3 +89,35 @@
           ("\C-m" . mc/mark-all-dwim)
           ("<return>" . mule-keymap)
           ))
+
+(use-package company
+  :ensure t
+  :config
+  (setq company-idle-delay 0.5)
+  (setq company-show-numbers t)
+  (setq company-tooltip-limit 10)
+  (setq company-minimum-prefix-length 2)
+  (setq company-tooltip-align-annotations t)
+  (setq company-tooltip-flip-when-above t)
+  (global-company-mode))
+
+(use-package git-gutter-fringe
+  :ensure t
+  :diminish git-gutter-mode
+  :demand t
+  :bind (("C-c h n" . git-gutter:next-hunk)
+         ("C-c h p" . git-gutter:previous-hunk))
+  :config
+  (progn
+    (global-git-gutter-mode t)
+    (define-fringe-bitmap 'git-gutter-fr:added
+      [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
+      nil nil 'center)
+    (define-fringe-bitmap 'git-gutter-fr:modified
+      [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
+      nil nil 'center)
+    (define-fringe-bitmap 'git-gutter-fr:deleted
+      [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
+      nil nil 'center)))
+
+;;; packages.el ends here

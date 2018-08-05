@@ -1,4 +1,4 @@
-;;; This fixed garbage collection, makes emacs start up faster
+;;; This fixed garbage collect, makes emacs start up faster
 (setq gc-cons-threshold 402653184
       gc-cons-percentage 0.6)
 

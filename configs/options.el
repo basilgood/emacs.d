@@ -1,7 +1,11 @@
+;;; package --- summary
+;;; commentary:
+;;; code:
+
 (setq inhibit-startup-message t)
 
 (if (window-system)
-    (set-frame-font "Monospace 11"))
+    (set-frame-font "Inconsolata 12"))
 
 (if window-system
     (progn
@@ -30,6 +34,8 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (setq scroll-conservatively 100)
+(setq hscroll-margin 0)
+(setq hscroll-step 1)
 
 (setq large-file-warning-threshold 100000000)
 
@@ -52,7 +58,8 @@
   recentf-auto-cleanup 'never)
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
-(show-paren-mode t)
+(bind-key "M-D" 'delete-pair)
+(add-hook 'prog-mode-hook 'show-paren-mode)
 
 (add-hook 'after-init-hook 'global-whitespace-mode)
 (setq whitespace-style (list 'space-mark 'tab-mark 'newline-mark))
@@ -65,3 +72,6 @@
 
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
+
+(setq truncate-partial-width-windows t)
+(setq-default word-wrap t)
