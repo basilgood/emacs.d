@@ -110,4 +110,7 @@
   :init (smex-initialize)
   :bind ("M-x" . smex))
 
+(use-package sr-speedbar
+  :ensure t)
+
 ;;; navigation ends here
