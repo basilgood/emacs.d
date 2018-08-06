@@ -47,10 +47,13 @@
   :ensure t
   :defer t)
 
-(use-package jinja2-mode
+(use-package
+  js2-mode
   :ensure t
-  :defer t
-  :mode "\\.j2$")
+  :init
+  (progn
+
+    (add-to-list 'auto-mode-alist '("\\.js?\\'" . js2-jsx-mode))))
 
 (use-package twig-mode
   :ensure t
@@ -64,5 +67,8 @@
 (use-package coffee-mode
   :ensure t
   :mode "\\.coffee$\\'")
+
+(use-package vimrc-mode
+  :ensure t)
 
 ;;; lang.el ends here

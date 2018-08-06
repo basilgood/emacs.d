@@ -1,6 +1,8 @@
 ;;; package --- all packages
 ;;; commentary:
 ;;; code:
+(use-package cl
+  :ensure t)
 
 (use-package diminish
   :ensure t
@@ -31,12 +33,6 @@
         ispell-extra-args '("--sug-mode=ultra"))
   (add-hook 'text-mode-hook #'flyspell-mode)
   (add-hook 'prog-mode-hook #'flyspell-prog-mode))
-
-(use-package flycheck
-  :ensure t
-  :defer 5
-  :config
-  (global-flycheck-mode 1))
 
 (use-package restart-emacs
   :ensure t
