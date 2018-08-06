@@ -64,7 +64,11 @@
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
 (bind-key "M-D" 'delete-pair)
-(add-hook 'prog-mode-hook 'show-paren-mode)
+(set show-paren-delay 0)
+(show-paren-mode t)
+(set-face-background 'show-paren-match (face-background 'default))
+(set-face-foreground 'show-paren-match "#def")
+(set-face-attribute 'show-paren-match nil :underline 't)
 
 (add-hook 'after-init-hook 'global-whitespace-mode)
 (setq whitespace-style (list 'space-mark 'tab-mark 'newline-mark))
