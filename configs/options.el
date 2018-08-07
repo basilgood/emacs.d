@@ -64,7 +64,7 @@
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
 (bind-key "M-D" 'delete-pair)
-(set show-paren-delay 0)
+(setq show-paren-delay 0)
 (show-paren-mode t)
 (set-face-background 'show-paren-match (face-background 'default))
 (set-face-foreground 'show-paren-match "#def")
@@ -83,4 +83,9 @@
 (put 'downcase-region 'disabled nil)
 
 (setq truncate-partial-width-windows t)
+
+(global-git-gutter-mode +1)
+(custom-set-variables
+  '(git-gutter:handled-backends '(git hg bzr svn)))
+
 (setq-default word-wrap t)

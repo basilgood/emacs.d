@@ -1,3 +1,7 @@
+;;; global.el --- summary
+;;; commentary:
+;;; code:
+
 (defun split-and-follow-horizontally ()
   (interactive)
   (split-window-below)

@@ -7,9 +7,14 @@
   :config
   (progn (load-theme 'atom-one-dark t)))
 
-(use-package telephone-line
+(use-package powerline
   :ensure t
   :config
-(telephone-line-mode t))
+  (powerline-center-theme))
+
+(use-package beacon
+  :ensure t
+  :config
+  (beacon-mode +1))
 
 ;;; theme.el ends here

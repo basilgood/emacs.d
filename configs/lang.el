@@ -1,3 +1,7 @@
+;;; lang.el --- summary
+;;; commentary:
+;;; code:
+
 (use-package ruby-mode
   :ensure t
   :mode "\\.rb\\'"
@@ -21,18 +25,22 @@
   :ensure t
   :mode ("\\.md\\'" "\\.mkd\\'" "\\.markdown\\'"))
 
-(use-package js2-mode
-  :ensure t
-  :defer t
-  :mode "\\.js$"
-  :config
-  (add-hook 'js2-mode-hook 'editorconfig-conf-mode))
+;; (use-package eslint-fix
+;;   :ensure t
+;;   :config
+;;   (eval-after-load 'js2-mode
+;; 	   '(add-hook 'js2-mode-hook (lambda () (add-hook 'after-save-hook 'eslint-fix nil t)))))
+;; ;;  (setq eslintd-fix-executable "~/.n/bin/eslint_d"))
 
-(use-package eslintd-fix
+(use-package mmm-mode
   :ensure t
+  :commands mmm-mode
   :config
-  (add-hook 'js2-mode-hook 'eslintd-fix-mode)
-  (setq eslintd-fix-executable "~/.n/bin/eslint_d"))
+  (setq
+   mmm-global-mode 'buffers-with-submode-classes
+   mmm-submode-decoration-level 0)
+
+  (use-package mmm-auto))
 
 (use-package json-mode
   :ensure t
@@ -47,13 +55,12 @@
   :ensure t
   :defer t)
 
-(use-package
-  js2-mode
-  :ensure t
-  :init
-  (progn
-
-    (add-to-list 'auto-mode-alist '("\\.js?\\'" . js2-jsx-mode))))
+;; (use-package js2-mode
+;;   :ensure t
+;;   :init
+;;   (progn
+;;     (add-to-list 'auto-mode-alist '("\\.js?\\'" .
+;; js2-jsx-mode))))
 
 (use-package twig-mode
   :ensure t
@@ -70,5 +77,6 @@
 
 (use-package vimrc-mode
   :ensure t)
+
 
 ;;; lang.el ends here
