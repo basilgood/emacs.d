@@ -1,5 +1,6 @@
 elpa
 .cache
+config.el
 ido*
 places
 recentf
