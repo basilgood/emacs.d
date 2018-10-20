@@ -1,0 +1,26 @@
+;;; -*- coding: utf-8 -*-
+(("/home/vasy/.emacs.d/"
+  (dired-filename . "/home/vasy/.emacs.d/config.org"))
+ ("/home/vasy/.emacs.d/config.org" . 8550)
+ ("/home/vasy/.emacs.d/elpa/ag-20180225.1040/ag-autoloads.el" . 3157)
+ ("/home/vasy/.emacs.d/elpa/dash-20180910.1856/dash-autoloads.el" . 557)
+ ("/home/vasy/.emacs.d/elpa/s-20180406.808/s-autoloads.el" . 368)
+ ("/home/vasy/.emacs.d/elpa/find-file-in-project-20180912.1218/find-file-in-project-autoloads.el" . 9011)
+ ("/home/vasy/.emacs.d/elpa/ivy-20181016.730/ivy-autoloads.el" . 4443)
+ ("/home/vasy/.emacs.d/elpa/projectile-20181017.830/projectile-autoloads.el" . 18250)
+ ("/home/vasy/.emacs.d/elpa/pkg-info-20150517.1143/pkg-info-autoloads.el" . 3882)
+ ("/home/vasy/.emacs.d/elpa/epl-20180205.2049/epl-autoloads.el" . 380)
+ ("/home/vasy/.emacs.d/elpa/neotree-20180616.1603/neotree-autoloads.el" . 1355)
+ ("/home/vasy/.emacs.d/elpa/evil-matchit-20181009.2359/evil-matchit-autoloads.el" . 11689)
+ ("/home/vasy/.emacs.d/elpa/evil-search-highlight-persist-20170523.334/evil-search-highlight-persist-autoloads.el" . 2067)
+ ("/home/vasy/.emacs.d/elpa/highlight-20181002.1151/highlight-autoloads.el" . 25299)
+ ("/home/vasy/.emacs.d/elpa/evil-surround-20181018.2155/evil-surround-autoloads.el" . 2329)
+ ("/home/vasy/.emacs.d/elpa/evil-leader-20140606.1243/evil-leader-autoloads.el" . 1113)
+ ("/home/vasy/.emacs.d/elpa/evil-20180914.1216/evil-autoloads.el" . 3789)
+ ("/home/vasy/.emacs.d/elpa/undo-tree-0.6.5/undo-tree-autoloads.el" . 1842)
+ ("/home/vasy/.emacs.d/elpa/goto-chg-20180105.1833/goto-chg-autoloads.el" . 1995)
+ ("/home/vasy/emacs.d/"
+  (dired-filename . "/home/vasy/emacs.d/configs"))
+ ("/home/vasy/emacs.d/configs/"
+  (dired-filename . "/home/vasy/emacs.d/configs/options.el"))
+ ("/home/vasy/emacs.d/configs/options.el" . 1109))

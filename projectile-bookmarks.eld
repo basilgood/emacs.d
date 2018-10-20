@@ -1,0 +1,1 @@
+("~/Projects/cosmoz-omnitable/")
