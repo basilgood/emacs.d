@@ -1,11 +1,20 @@
+
+# -*- mode: org; coding: utf-8; -*-
+#+TODO: ACTIVE | DISABLED
+#+STARTUP: indent
+* Calendar
+ #+BEGIN_SRC emacs-lisp
+ (setq calendar-week-start-day 1)
+ #+END_SRC
+
 #+TITLE: Emacs Configuration
 #+AUTHOR: vasy
 * Options
 ** UI
 #+BEGIN_SRC emacs-lisp 
    (setq inhibit-splash-screen t
-   inhibit-startup-message t
-   inhibit-startup-echo-area-message t)
+     inhibit-startup-message t
+     inhibit-startup-echo-area-message t)
    (menu-bar-mode -1)
    (tool-bar-mode -1)
    (when (boundp 'scroll-bar-mode)
@@ -78,7 +87,6 @@
    (setq large-file-warning-threshold 100000000)
    (global-unset-key (kbd "C-z"))
    #+END_SRC
-** 
 * Theme
 ** I like inkpot theme
    #+BEGIN_SRC emacs-lisp
@@ -86,6 +94,26 @@
    :ensure t
    :config
    (load-theme 'inkpot t))
+(custom-theme-set-faces
+ 'inkpot
+ '(linum ((t (:background "#2e2e2e" :foreground "#8b8bcd"))))
+ '(show-paren-match ((t (:underline t :background "#4e4e8f"))))
+ '(show-paren-match-face ((t (:underline nil :background "#4e4e8f"))))
+ '(font-lock-string-face ((t (:foreground "#ffcd8b"))))
+ '(font-lock-comment-face ((t (:italic t :foreground "#d8d8d8"))))
+ '(font-lock-comment-delimiter-face ((t (:italic t :foreground "#d8d8d8"))))
+
+ ;; white-space
+ '(whitespace-trailing ((nil (:background "#343443" :foreground nil))))
+ '(whitespace-space ((nil (:background nil :foreground "#fcfcfc"))))
+ '(whitespace-tab ((nil (:background nil :foreground "#fcfcfc"))))
+
+ ; isearch
+ '(isearch ((t (:bold t :foreground "#303030" :background "#ad7b57"))))
+ '(lazy-highlight ((t  (:foreground "#303030" :background "#ad7b57"))))
+ '(isearch-fail ((t (:foreground "#ffffff" :background "#ce4e4e")))))
+
+
    #+END_SRC
 ** I like simple modeline
    #+BEGIN_SRC emacs-lisp
@@ -120,17 +148,11 @@
    (beacon-mode +1))
    #+END_SRC
 
-** Custom.el
-   Set up the customize file to its own separate file, instead of saving
-   customize settings in [[file:init.el][init.el]].
-   #+BEGIN_SRC emacs-lisp 
-   ;; config changes made through the customize UI will be stored here
-   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-
-   (when (file-exists-p custom-file)
-     (load custom-file))
-   #+END_SRC
 * Packages
+** Server mode
+#+BEGIN_SRC 
+(server-start)
+#+END_SRC
 ** Diminish
 #+BEGIN_SRC emacs-lisp
 (use-package diminish
@@ -252,32 +274,82 @@
 
 *** find in project
 #+BEGIN_SRC emacs-lisp
-  (use-package find-file-in-project :ensure t)
-  (use-package ag
-    :ensure t
-    :config
-  (setq ag-reuse-buffers 't)
-  (setq ag-reuse-window 't)
-  (setq ag-highlight-search t))
-  (use-package helm
-    :ensure t
-    :diminish helm-mode
-    :config
-  (helm-mode 1)
-  (setq helm-buffers-fuzzy-matching t)
-  (setq helm-autoresize-mode t)
-  (setq helm-buffer-max-length 40)
-  (global-set-key (kbd "M-x") #'helm-M-x)
-  (define-key helm-map (kbd "S-SPC") 'helm-toggle-visible-mark)
-  (define-key helm-find-files-map (kbd "C-k") 'helm-find-files-up-one-level))
-  (use-package helm-ag
-    :ensure t)
-  (use-package helm-projectile
-  :bind (("C-S-P" . helm-projectile-switch-project)
-         :map evil-normal-state-map
-         ("C-p" . helm-projectile))
-  :after (helm projectile evil)
-  :commands (helm-projectile helm-projectile-switch-project)
-  :ensure t)
-  (helm-projectile-on)
+(use-package ag
+  :ensure t
+  :commands (ag ag-regexp ag-project))
+(use-package helm
+  :ensure t
+  :bind (("M-a" . helm-M-x)
+         ("C-x C-f" . helm-find-files)
+         ("C-x f" . helm-recentf)
+         ("C-SPC" . helm-dabbrev)
+         ("M-y" . helm-show-kill-ring)
+         ("C-x b" . helm-buffers-list))
+  :bind (:map helm-map
+	      ("M-i" . helm-previous-line)
+	      ("M-k" . helm-next-line)
+	      ("M-I" . helm-previous-page)
+	      ("M-K" . helm-next-page)
+	      ("M-h" . helm-beginning-of-buffer)
+	      ("M-H" . helm-end-of-buffer))
+  :config (progn
+	    (setq helm-buffers-fuzzy-matching t)
+            (helm-mode 1)))
+(use-package helm-descbinds
+  :ensure t
+  :bind ("C-h b" . helm-descbinds))
+(use-package helm-files
+  :bind (:map helm-find-files-map
+	      ("M-i" . nil)
+	      ("M-k" . nil)
+	      ("M-I" . nil)
+	      ("M-K" . nil)
+	      ("M-h" . nil)
+	      ("M-H" . nil)))
+(use-package helm-swoop
+  :ensure t
+  :bind (("M-m" . helm-swoop)
+	 ("M-M" . helm-swoop-back-to-last-point))
+  :init
+  (bind-key "M-m" 'helm-swoop-from-isearch isearch-mode-map))
+(use-package helm-ag
+  :ensure helm-ag
+  :bind ("M-p" . helm-projectile-ag)
+  :commands (helm-ag helm-projectile-ag)
+  :init (setq helm-ag-insert-at-point 'symbol
+	      helm-ag-command-option "--path-to-ignore ~/.agignore"))
+(use-package projectile
+  :ensure t
+  :bind (("C-x s" . projectile-switch-open-project)
+	 ("C-x p" . projectile-switch-project))
+  :config
+  (projectile-global-mode)
+  (setq projectile-enable-caching t)
+  (setq projectile-indexing-method 'turbo-alien))
+  
+(use-package helm-projectile
+  :ensure t
+  :bind ("M-t" . helm-projectile-find-file)
+  :config
+  (helm-projectile-on))
 #+END_SRC
+** Diff-hl
+#+BEGIN_SRC emacs-lisp
+(use-package diff-hl
+  :ensure t
+  :config
+  (global-diff-hl-mode +1)
+  (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+#+END_SRC
+* From BB
+** Custom.el
+   Set up the customize file to its own separate file, instead of saving
+   customize settings in [[file:init.el][init.el]].
+   #+BEGIN_SRC emacs-lisp 
+   ;; config changes made through the customize UI will be stored here
+   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
+   (when (file-exists-p custom-file)
+     (load custom-file))
+   #+END_SRC
