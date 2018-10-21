@@ -1,6 +1,5 @@
 elpa
 .cache
-config.el
 ido*
 places
 recentf
@@ -8,5 +7,6 @@ projectile-bookmarks.eld
 projectile.cache
 smex-items
 custom.el
+!config.el
 .last-package-update-day
 auto-save-list/
