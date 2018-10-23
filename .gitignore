@@ -3,6 +3,7 @@ elpa
 ido*
 places
 recentf
+eshell/
 projectile-bookmarks.eld
 projectile.cache
 smex-items
