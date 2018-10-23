@@ -192,16 +192,16 @@ Font selection
 (use-package org
   :ensure t
   :config
-  (progn
+  ( progn
     (setq org-src-fontify-natively t)
-    (setq org-src-tab-acts-natively t)
+    ( sctq org-src-tab-acts-natively t )
     (setq org-time-clocksum-format
       (quote
        (:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t)))
     (setq org-pretty-entities t)
     (setq org-src-preserve-indentation t)
     (setq org-startup-folded nil)
-    (setq org-src-tab-acts-natively t)))
+    (setq org-src-tab-acts-natively t) ))
 (use-package org-bullets
   :commands org-bullets-mode
   :init
@@ -221,6 +221,13 @@ Font selection
   :diminish hs-minor-mode
   :diminish abbrev-mode
   :diminish auto-fill-function)
+#+END_SRC
+*** Which key
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode +1))
 #+END_SRC
 *** Vim mode
 #+BEGIN_SRC emacs-lisp
@@ -268,12 +275,7 @@ Font selection
     "n"  'neotree-project-dir
     "."  'switch-to-previous-buffer
     "/"  'evil-search-highlight-persist-remove-all
-    "h"  'help-map
-    "ps" 'helm-projectile-ag
-    "pa" 'helm-projectile-find-file-in-known-projects
-    "z" 'zoom-window-zoom
-    "be" (lambda () (interactive) (bookmark-jump "emacs"))
-    "w"  'ace-window))
+    "be" (lambda () (interactive) (bookmark-jump "emacs"))))
 
 (use-package evil-surround
   :ensure t
@@ -311,25 +313,25 @@ Font selection
   :defer t
   :config
   (projectile-global-mode))
+  (setq projectile-mode-line
+        '(:eval (format " [%s]" (projectile-project-name))))
+  (setq projectile-remember-window-configs t)
+  (setq projectile-completion-system 'ivy)
+  
+(use-package flx
+  :ensure t)
 
-(use-package helm
+(use-package ivy
   :ensure t
+  :diminish ivy-mode
   :config
-  (helm-mode 1)
-  (setq helm-autoresize-mode t)
-  (global-set-key (kbd "C-x C-f") #'helm-find-files)
-  (global-set-key (kbd "M-x") #'helm-M-x)
-  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to do persistent action
-  (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-  (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
-  )
-
-(use-package helm-projectile
-  :bind (("C-S-P" . helm-projectile-switch-project))
-  :map evil-normal-state-map
-         ("C-p" . helm-projectile-find-file)
-  :ensure t
-  )
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-re-builders-alist
+        '((t . ivy--regex-fuzzy)))
+  (setq ivy-initial-inputs-alist nil)
+  (setq enable-recursive-minibuffers t)
+  (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit))
 
 (use-package neotree
   :ensure t
@@ -337,9 +339,16 @@ Font selection
 #+END_SRC
 *** Git
 #+BEGIN_SRC emacs-lisp
-(use-package magit
-  :ensure t)
-(global-set-key (kbd "C-x g") 'magit-status)
+;; (use-package magit
+;;   :ensure t
+;;   :bind (("C-x g" . magit-status)))
+
+(use-package diff-hl
+  :ensure t
+  :config
+  (global-diff-hl-mode +1)
+  (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 #+END_SRC
 *** Custom el
 Set up the customize file to its own separate file, instead of saving
