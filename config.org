@@ -3,75 +3,73 @@
 #+AUTHOR: vasy
 #+STARTUP: indent
 * Configuration
-** Package Management
-   :PROPERTIES:
-   :CUSTOM_ID: package-management
-   :END:
-   
-   #+begin_src emacs-lisp
-     (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                              ("melpa" . "https://melpa.org/packages/")
-                              ("org" . "https://orgmode.org/elpa/")))
+** Boot emacs
+*** Startup time
+#+BEGIN_SRC emacs-lisp
+(eval-when-compile (require 'cl))
 
-     (setq load-prefer-newer t)
-
-     (package-initialize)
-     
-     (add-to-list 'exec-path "~/.nix-profile/bin")
-
-     (when (not package-archive-contents)
-       (package-refresh-contents))
-
-     (unless (package-installed-p 'use-package)
-       (package-install 'use-package))
-
-     (eval-when-compile
-       (require 'use-package))
-
-   #+end_src
-** Startup
+(lexical-let ((emacs-start-time (current-time)))
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (let ((elapsed (float-time (time-subtract (current-time) emacs-start-time))))
+                (message "[Emacs initialized in %.3fs]" elapsed)))))
+#+END_SRC
 *** Garbage collector threshold
-
-    This fixed garbage collect, makes emacs start up faster
-    #+begin_src emacs-lisp
-    (setq gc-cons-threshold 402653184
+This fixed garbage collect, makes emacs start up faster
+#+begin_src emacs-lisp
+(setq gc-cons-threshold 402653184
       gc-cons-percentage 0.6)
 
-    (defvar startup/file-name-handler-alist file-name-handler-alist)
-    (setq file-name-handler-alist nil)
+(defvar startup/file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
 
-    (defun startup/revert-file-name-handler-alist ()
-    (setq file-name-handler-alist startup/file-name-handler-alist))
+(defun startup/revert-file-name-handler-alist ()
+  (setq file-name-handler-alist startup/file-name-handler-alist))
 
-    (defun startup/reset-gc ()
-    (setq gc-cons-threshold 16777216
+(defun startup/reset-gc ()
+  (setq gc-cons-threshold 16777216
         gc-cons-percentage 0.1))
 
-    (add-hook 'emacs-startup-hook 'startup/revert-file-name-handler-alist)
-    (add-hook 'emacs-startup-hook 'startup/reset-gc)
-    #+end_src
+(add-hook 'emacs-startup-hook 'startup/revert-file-name-handler-alist)
+(add-hook 'emacs-startup-hook 'startup/reset-gc)
+#+end_src
+
+*** Package Management
+#+begin_src emacs-lisp
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")))
+
+(setq load-prefer-newer t)
+
+(package-initialize)
+
+(add-to-list 'exec-path "~/.nix-profile/bin")
+
+(when (not package-archive-contents)
+  (package-refresh-contents))
+
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
+   #+end_src
 ** UI and options
 *** Font
-
 Font selection
 #+BEGIN_SRC 
 (if (window-system)
     (set-frame-font "Monospace 11"))
-#+END_SRC
-
-
-#+BEGIN_SRC 
-
 #+END_SRC
 *** Pretty
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-splash-screen t
       inhibit-startup-message t
       inhibit-startup-echo-area-message t)
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(when (boundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
+(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (mouse-wheel-mode t)
 (setq custom-safe-themes t)
 (if (window-system)
@@ -228,13 +226,7 @@ Font selection
   :ensure t
   :config
   (evil-mode 1)
-  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
   (define-key evil-normal-state-map (kbd "RET") 'newline-without-break-of-line)
-  (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
-  (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
-  (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
-  (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
   (define-key evil-normal-state-map [escape] 'keyboard-quit)
   (define-key evil-visual-state-map [escape] 'keyboard-quit)
   (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
@@ -257,15 +249,14 @@ Font selection
   :ensure t
   :config
   (global-evil-leader-mode)
-  (evil-leader/set-leader ",")
+  (evil-leader/set-leader "SPC")
   (setq evil-leader/in-all-states 1)
   (evil-leader/set-key
     ","  (lambda () (interactive) (ansi-term (getenv "SHELL")))
     "m"  'neotree-toggle
-    "n"  'neotree-project-dir
-    "."  'switch-to-previous-buffer
+    "b"  'ibuffer-list-buffers
     "/"  'evil-search-highlight-persist-remove-all
-    "be" (lambda () (interactive) (bookmark-jump "emacs"))))
+    "k" (lambda () (interactive) (bookmark-jump "emacs"))))
 
 (use-package evil-surround
   :ensure t
@@ -299,8 +290,8 @@ Font selection
 *** Navigation
 #+BEGIN_SRC emacs-lisp
 (use-package dired-k
-    :ensure t
-    :config
+  :ensure t
+  :config
   (progn
     (add-hook 'dired-initial-position-hook 'dired-k)))
 (bind-keys
@@ -308,34 +299,68 @@ Font selection
  ("K" . dired-k)
  ("g" . dired-k))
 
-  (use-package projectile
-    :ensure t
-    :defer t
-    :config
-    (projectile-global-mode))
-  (setq projectile-mode-line
-        '(:eval (format " [%s]" (projectile-project-name))))
-  (setq projectile-remember-window-configs t)
+;; (use-package projectile
+;;   :ensure t
+;;   :defer t
+;;   :config
+;;   (projectile-global-mode))
+;; (setq projectile-mode-line
+;;       '(:eval (format " [%s]" (projectile-project-name))))
+;; (setq projectile-remember-window-configs t)
+;; (setq projectile-completion-system 'ivy)
+
+(use-package projectile
+  :diminish projectile-mode
+  :ensure t
+  :defer t
+  :config
+  (evil-leader/set-key
+    "p f"   'projectile-find-file
+    "p F"   'projectile-find-file-in-known-projects
+    "p o"   'projectile-multi-occur
+    "x r"   'projectile-replace
+    "x R"   'projectile-regenerate-tags
+    "p t"   'projectile-find-tag
+    "p p"   'projectile-switch-project)
+
+  (require 'projectile)
+  (setq projectile-globally-ignored-files
+        (append '("*.class" "*.o" "*.so" "*.elc" "*.jar" "*.png" "*.jpg" "*.jpeg" "*.gif")
+                projectile-globally-ignored-files))
+  (setq projectile-globally-ignored-directories
+        (append '("target")
+                projectile-globally-ignored-directories))
   (setq projectile-completion-system 'ivy)
-  
-  (use-package flx
-    :ensure t)
+  (projectile-global-mode))
 
-  (use-package ivy
-    :ensure t
-    :diminish ivy-mode
-    :config
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-re-builders-alist
-          '((t . ivy--regex-fuzzy)))
-    (setq ivy-initial-inputs-alist nil)
-    (setq enable-recursive-minibuffers t)
-    (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit))
+(use-package flx
+  :ensure t)
 
-  (use-package neotree
-    :ensure t
-    )
+(use-package ivy
+  :ensure t
+  :diminish ivy-mode
+  :config
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-re-builders-alist
+        '((t . ivy--regex-fuzzy)))
+  (setq ivy-initial-inputs-alist nil)
+  (setq enable-recursive-minibuffers t)
+  (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit))
+
+(use-package neotree
+  :ensure t
+  )
+#+END_SRC
+*** Workspaces
+#+BEGIN_SRC emacs-lisp
+(use-package eyebrowse
+  :diminish eyebrowse-mode
+  :ensure t
+  :config
+  (define-key evil-motion-state-map (kbd "gR") 'eyebrowse-rename-window-config)
+  (eyebrowse-mode)
+  (eyebrowse-setup-opinionated-keys))
 #+END_SRC
 *** Git
 #+BEGIN_SRC emacs-lisp
