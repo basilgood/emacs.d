@@ -375,7 +375,7 @@ Font selection
     (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 #+END_SRC
-*** Custom el
+** Custom el
 Set up the customize file to its own separate file, instead of saving
 customize settings in [[file:init.el][init.el]].
 #+BEGIN_SRC emacs-lisp 
