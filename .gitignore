@@ -11,3 +11,4 @@ custom.el
 config.el
 .last-package-update-day
 auto-save-list/
+history
