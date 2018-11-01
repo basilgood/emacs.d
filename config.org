@@ -25,24 +25,18 @@
       (select-frame frame))
     (condition-case nil
         (set-frame-font
-         "DejaVuSansMono Nerd Font")
+         "TerminessTTF Nerd Font Mono:style=Medium")
       (error
        (set-frame-font
         "DejaVu Sans Mono"))))
   (dejavu-font-check)
-  (set-face-attribute 'default nil :height 113)
+  (set-face-attribute 'default nil :height 120)
   (add-hook 'after-make-frame-functions 'dejavu-font-check)
 #+END_SRC
 * Start on scratch
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-screen t)
   (setq initial-scratch-message "<3")
-#+END_SRC
-* Numbers, cursor
-#+BEGIN_SRC emacs-lisp
-  (global-linum-mode 1)
-  (blink-cursor-mode -1)
-  (setq make-pointer-invisible t)
 #+END_SRC
 * Bell
 #+BEGIN_SRC emacs-lisp
@@ -126,11 +120,35 @@
 #+BEGIN_SRC emacs-lisp
   (delete-selection-mode t)
 #+END_SRC
+* Theme
+** onedark
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package atom-one-dark-theme
+  ;;   :ensure t
+  ;;   :config
+  ;;   (load-theme 'atom-one-dark t))
+#+END_SRC
+
+** spacemacs
+#+BEGIN_SRC emacs-lisp
+  (use-package spacemacs-theme
+    :ensure spacemacs-theme
+    :defer t
+    :init (load-theme 'spacemacs-dark t))
+#+END_SRC
+* Numbers, cursor
+#+BEGIN_SRC emacs-lisp
+  (global-linum-mode 1)
+  (blink-cursor-mode -1)
+  (setq make-pointer-invisible t)
+  (setq-default cursor-type '(bar . 2))
+  (set-cursor-color "green")
+#+END_SRC
 * Diminish
 #+BEGIN_SRC emacs-lisp
   (use-package diminish
     :ensure t
-    :defer 1
+    :defer t
     :init
     (diminish 'which-key-mode)
     (diminish 'linum-relative-mode)
@@ -148,7 +166,7 @@
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
     :ensure t
-    :defer 1
+    :defer t
     :init
     (which-key-mode +1))
 #+END_SRC
@@ -162,7 +180,7 @@
 #+BEGIN_SRC emacs-lisp
   (use-package use-package-chords
     :ensure t
-    :config
+    :init
     (key-chord-mode 1))
 #+END_SRC
 * Org mode
@@ -185,7 +203,7 @@
   (global-set-key (kbd "C-c '") 'org-edit-src-code)
   (use-package org-bullets
     :ensure t
-    :defer 1
+    :defer t
     :init
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
 #+END_SRC
@@ -281,6 +299,27 @@
     (setq neo-smart-open t)
     (setq neo-window-fixed-size nil)
     :bind ("s-/" . neotree-toggle))
+
+  (use-package ztree
+    :ensure t
+    :defer t
+    :chords
+    ("zz" . ztree-dir))
+#+END_SRC
+* Search and replace
+#+BEGIN_SRC emacs-lisp
+  (use-package anzu
+    :ensure t
+    :bind
+    (([remap query-replace] . anzu-query-replace)
+     ([remap query-replace-regexp] . anzu-query-replace-regexp)
+     :map isearch-mode-map
+     ([remap isearch-query-replace] . anzu-isearch-query-replace)
+     ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp))
+    :init
+    (global-anzu-mode 1)
+    :config
+    (setq anzu-cons-mode-line-p nil))
 #+END_SRC
 * Git
 #+BEGIN_SRC emacs-lisp
@@ -294,6 +333,7 @@
 
   (use-package diff-hl
     :ensure t
+    :defer 10
     :init
     (global-diff-hl-mode +1)
     (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
@@ -329,6 +369,14 @@
   ;; (global-set-key (kbd "M-{") 'insert-pair)
   ;; (global-set-key (kbd "M-\"") 'insert-pair)
   ;; (global-set-key (kbd "M-\'") 'insert-pair)
+#+END_SRC
+* Temporary highlight changes
+#+BEGIN_SRC emacs-lisp
+  (use-package volatile-highlights
+    :ensure t
+    :defer 2
+    :config
+    (volatile-highlights-mode +1))
 #+END_SRC
 * Uniquify
 #+BEGIN_SRC emacs-lisp
@@ -418,13 +466,21 @@
     :ensure t
     :mode ("\\.ya?ml\\'" . yaml-mode))
 #+END_SRC
-* Theme
-** onedark
+* Markdown mode
 #+BEGIN_SRC emacs-lisp
-  (use-package atom-one-dark-theme
-    :ensure t
-    :init
-    (load-theme 'atom-one-dark t))
+(use-package markdown-mode
+  :ensure t
+  :mode (("\\.md\\'" . gfm-mode)
+         ("\\.markdown\\'" . gfm-mode))
+  :config
+  (setq markdown-fontify-code-blocks-natively t))
+#+END_SRC
+* Flycheck
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :ensure t
+  :config
+  (add-hook 'after-init-hook #'global-flycheck-mode))
 #+END_SRC
 * Modeline
 ** A small trim of the original
