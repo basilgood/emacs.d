@@ -25,12 +25,12 @@
       (select-frame frame))
     (condition-case nil
         (set-frame-font
-         "TerminessTTF Nerd Font Mono:style=Medium")
+         "DejaVuSansMono Nerd Font Mono:style=book")
       (error
        (set-frame-font
         "DejaVu Sans Mono"))))
   (dejavu-font-check)
-  (set-face-attribute 'default nil :height 120)
+  (set-face-attribute 'default nil :height 100)
   (add-hook 'after-make-frame-functions 'dejavu-font-check)
 #+END_SRC
 * Start on scratch
@@ -84,6 +84,10 @@
   (setq global-auto-revert-non-file-buffers t
         auto-revert-verbose nil)
 #+END_SRC
+* Wrap lines
+#+BEGIN_SRC emacs-lisp
+  (setq-default truncate-lines t)
+#+END_SRC
 * Use hippie-expand instead of dabbrev
 #+BEGIN_SRC emacs-lisp
   (setq hippie-expand-try-functions-list '(try-expand-dabbrev
@@ -96,7 +100,6 @@
                                            try-expand-line
                                            try-complete-lisp-symbol-partially
                                            try-complete-lisp-symbol))
-
   (global-set-key (kbd "M-/") #'hippie-expand)
 #+END_SRC
 * Replace buffer-menu with ibuffer
@@ -195,7 +198,7 @@
 
   (use-package htmlize
     :ensure t
-  )
+    )
 
   (add-hook 'org-mode-hook
             '(lambda ()
@@ -207,31 +210,32 @@
     :init
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
 #+END_SRC
-* Navigation
+* Windows move
 #+BEGIN_SRC emacs-lisp
   (use-package windmove
     :config
     (windmove-default-keybindings))
+  (defun split-and-follow-horizontally ()
+    (interactive)
+    (split-window-below)
+    (balance-windows)
+    (other-window 1))
+  (global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
 
-  (use-package avy
-    :ensure t
-    :bind (("s-." . avy-goto-word-or-subword-1)
-           ("s-," . avy-goto-char))
-    :init
-    (setq avy-background t))
-
-  (use-package ag
-    :ensure t
-    )
-
-  (use-package projectile
-    :ensure t
-    :init
-    (setq projectile-completion-system 'ivy)
-    :config
-    (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-    (projectile-mode +1))
-
+  (defun split-and-follow-vertically ()
+    (interactive)
+    (split-window-right)
+    (balance-windows)
+    (other-window 1))
+  (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
+#+END_SRC
+* Go to
+#+BEGIN_SRC emacs-lisp
+  (use-package ace-jump-mode
+    :bind ("s-." . ace-jump-char-mode))
+#+END_SRC
+* Dired
+#+BEGIN_SRC emacs-lisp
   (use-package dired-k
     :ensure t
     :defer 1
@@ -245,59 +249,95 @@
     (require 'dired-x))
   (bind-keys
    :map dired-mode-map
-   ("K" . dired-k)
    ("g" . dired-k))
-
-  (use-package flx
+#+END_SRC
+* Helm and projectile
+#+BEGIN_SRC emacs-lisp
+  (use-package ag
     :ensure t
-    )
+    :commands (ag ag-regexp ag-project))
 
-  (use-package smex
-    :defer 1
-    :ensure t)
-
-  (use-package ivy
+  (use-package helm
     :ensure t
-    :defer 1
+    :diminish "HM"
+    :bind
+    ("C-x C-f" . 'helm-find-files)
+    ("C-x b" . 'helm-buffers-list)
+    ("M-x" . 'helm-M-x)
+    ("M-y" . helm-show-kill-ring)
+    ("C-x b" . helm-buffers-list)
+    :config
+    (setq helm-autoresize-max-height 0
+          helm-autoresize-min-height 30
+          helm-M-x-fuzzy-match t
+          helm-buffers-fuzzy-matching t
+          helm-recentf-fuzzy-match t
+          helm-semantic-fuzzy-match t
+          helm-imenu-fuzzy-match t
+          helm-split-window-in-side-p nil
+          helm-move-to-line-cycle-in-source nil
+          helm-ff-search-library-in-sexp t
+          helm-scroll-amount 8
+          helm-echo-input-in-header-line t)
     :init
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-re-builders-alist
-          '((t . ivy--regex-fuzzy)))
-    (setq ivy-initial-inputs-alist nil)
-    (setq enable-recursive-minibuffers t)
-    (global-set-key (kbd "C-c C-r") 'ivy-resume)
-    (global-set-key (kbd "<f6>") 'ivy-resume))
+    (helm-mode 1))
 
-  (use-package swiper
+  (require 'helm-config)
+  (helm-autoresize-mode 1)
+  (define-key helm-find-files-map (kbd "C-b") 'helm-find-files-up-one-level)
+  (define-key helm-find-files-map (kbd "C-f") 'helm-execute-persistent-action)
+
+  (use-package helm-swoop
     :ensure t
-    :defer 1
+    :bind (("M-m" . helm-swoop)
+           ("M-M" . helm-swoop-back-to-last-point))
     :init
-    (global-set-key "\C-s" 'swiper))
+    (bind-key "M-m" 'helm-swoop-from-isearch isearch-mode-map))
 
-  (use-package counsel
+  (use-package helm-ag
+    :ensure helm-ag
+    :bind ("M-p" . helm-projectile-ag)
+    :commands (helm-ag helm-projectile-ag)
+    :init (setq helm-ag-insert-at-point 'symbol
+                helm-ag-command-option "--path-to-ignore ~/.agignore"))
+
+  (use-package projectile
     :ensure t
-    :defer 1
+    :diminish "PJ"
     :init
-    (global-set-key (kbd "M-x") 'counsel-M-x)
-    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-    (global-set-key (kbd "<f1> l") 'counsel-find-library)
-    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-    (global-set-key (kbd "C-c g") 'counsel-git)
-    (global-set-key (kbd "C-c j") 'counsel-git-grep)
-    (global-set-key (kbd "C-c a") 'counsel-ag)
-    (global-set-key (kbd "C-x l") 'counsel-locate)
-    (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
+    (setq projectile-completion-system 'helm)
+    :config
+    (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+    (projectile-mode +1))
 
+  (use-package helm-projectile
+    :ensure t
+    :bind ("M-t" . helm-projectile-find-file)
+    :config
+    (helm-projectile-on))
+#+END_SRC
+* Terminal
+#+BEGIN_SRC emacs-lisp
+  (use-package multi-term
+    :ensure t
+    :defer 5
+    :init
+    (global-set-key (kbd "C-x C-m") 'multi-term)
+    (global-set-key (kbd "C-x m") 'multi-term-next))
+#+END_SRC
+* Neotree and ztree
+#+BEGIN_SRC emacs-lisp
   (use-package neotree
     :ensure t
     :defer 1
-    :init 
+    :init
     (setq neo-smart-open t)
+    (setq projectile-switch-project-action 'neotree-projectile-action)
     (setq neo-window-fixed-size nil)
+    (setq neo-vc-integration '(face char))
+    (setq neo-show-hidden-files t)
+    (setq neo-toggle-window-keep-p t)
+    (setq neo-force-change-root t)
     :bind ("s-/" . neotree-toggle))
 
   (use-package ztree
@@ -310,6 +350,7 @@
 #+BEGIN_SRC emacs-lisp
   (use-package anzu
     :ensure t
+    :diminish anzu-mode
     :bind
     (([remap query-replace] . anzu-query-replace)
      ([remap query-replace-regexp] . anzu-query-replace-regexp)
@@ -320,6 +361,23 @@
     (global-anzu-mode 1)
     :config
     (setq anzu-cons-mode-line-p nil))
+  (defadvice
+      isearch-forward
+      (after isearch-forward-recenter activate)
+    (recenter))
+  (ad-activate 'isearch-forward)
+
+  (defadvice
+      isearch-repeat-forward
+      (after isearch-repeat-forward-recenter activate)
+    (recenter))
+  (ad-activate 'isearch-repeat-forward)
+
+  (defadvice
+      isearch-repeat-backward
+      (after isearch-repeat-backward-recenter activate)
+    (recenter))
+  (ad-activate 'isearch-repeat-backward)
 #+END_SRC
 * Git
 #+BEGIN_SRC emacs-lisp
@@ -343,9 +401,9 @@
 #+BEGIN_SRC emacs-lisp
   (use-package pcre2el
     :ensure t
+    :diminish pcre-mode
     :config
-    (pcre-mode)
-    )
+    (pcre-mode))
 #+END_SRC
 * Expand region
 #+BEGIN_SRC emacs-lisp
@@ -365,6 +423,7 @@
   (use-package paren
     :config
     (show-paren-mode +1))
+  (setq jump-char-lazy-highlight-face nil)
   ;; (global-set-key (kbd "M-[") 'insert-pair)
   ;; (global-set-key (kbd "M-{") 'insert-pair)
   ;; (global-set-key (kbd "M-\"") 'insert-pair)
@@ -378,6 +437,19 @@
     :config
     (volatile-highlights-mode +1))
 #+END_SRC
+* Mark multiple
+#+BEGIN_SRC emacs-lisp
+  (use-package ace-mc
+    :ensure t
+    :bind ("M-." . ace-mc-add-multiple-cursors)
+    ("M-," . ace-mc-add-single-cursor))
+
+  (use-package iedit
+    :ensure t
+    :bind ("*" . iedit-mode))
+  (add-hook 'iedit-mode-hook (lambda () (diff-hl-mode -1)))
+  (add-hook 'iedit-mode-end-hook (lambda () (diff-hl-mode +1)))
+#+END_SRC
 * Uniquify
 #+BEGIN_SRC emacs-lisp
   (use-package uniquify
@@ -389,12 +461,12 @@
 #+END_SRC
 * Savehist
 #+BEGIN_SRC emacs-lisp
-(use-package savehist
-  :config
-  (setq savehist-additional-variables
-        '(search-ring regexp-search-ring)
-        savehist-autosave-interval 60)
-  (savehist-mode +1))
+  (use-package savehist
+    :config
+    (setq savehist-additional-variables
+          '(search-ring regexp-search-ring)
+          savehist-autosave-interval 60)
+    (savehist-mode +1))
 #+END_SRC
 * Recentf
 #+BEGIN_SRC emacs-lisp
@@ -407,12 +479,14 @@
 #+END_SRC
 * Undo tree
 #+BEGIN_SRC emacs-lisp
-     (use-package undo-tree
-       :diminish undo-tree-mode
-       :init
-       (undo-tree-mode +1)
-       :chords
-       (("uu" . undo-tree-visualize)))
+  (use-package undo-tree
+    :ensure t
+    :defer 5
+    :diminish undo-tree-mode
+    :init
+    (undo-tree-mode +1)
+    :chords
+    (("uu" . undo-tree-visualize)))
 #+END_SRC
 * Jump to source
 #+BEGIN_SRC emacs-lisp
@@ -429,6 +503,7 @@
     :ensure t
     :bind (("C-c o" . crux-open-with)
            ("M-o" . crux-smart-open-line)
+           ("s-o" . crux-smart-open-line-above)
            ("C-c n" . crux-cleanup-buffer-or-region)
            ("C-c f" . crux-recentf-find-file)
            ("C-M-z" . crux-indent-defun)
@@ -446,7 +521,7 @@
            ("s-j" . crux-top-join-line)
            ("C-^" . crux-top-join-line)
            ("s-k" . crux-kill-whole-line)
-           ("s-o" . crux-smart-open-line-above)
+           ("C-S-d" . crux-duplicate-current-line-or-region)
            ([remap move-beginning-of-line] . crux-move-beginning-of-line)
            ([(shift return)] . crux-smart-open-line)
            ([(control shift return)] . crux-smart-open-line-above)
@@ -459,7 +534,7 @@
     :ensure t
     :defer 1
     :bind ("C-z" . god-local-mode))
- #+END_SRC
+#+END_SRC
 * Yaml mode
 #+BEGIN_SRC emacs-lisp
   (use-package yaml-mode
@@ -468,44 +543,84 @@
 #+END_SRC
 * Markdown mode
 #+BEGIN_SRC emacs-lisp
-(use-package markdown-mode
-  :ensure t
-  :mode (("\\.md\\'" . gfm-mode)
-         ("\\.markdown\\'" . gfm-mode))
-  :config
-  (setq markdown-fontify-code-blocks-natively t))
+  (use-package markdown-mode
+    :ensure t
+    :mode (("\\.md\\'" . gfm-mode)
+           ("\\.markdown\\'" . gfm-mode))
+    :config
+    (setq markdown-fontify-code-blocks-natively t))
+#+END_SRC
+* Php mode
+#+BEGIN_SRC emacs-lisp
+  (use-package php-mode
+    :ensure t
+    :config
+    (progn
+      (setq-default php-mode-coding-style 'psr2)))
+#+END_SRC
+* Scss mode
+#+BEGIN_SRC emacs-lisp
+  (use-package scss-mode
+    :ensure t
+    :config
+    (progn
+      (setq-default scss-compile-at-save nil)))
+#+END_SRC
+* Web mode
+#+BEGIN_SRC emacs-lisp
+  (use-package web-mode
+    :ensure t
+    :mode "\\.twig$"
+    :mode "\\.html$"
+    :mode "\\.js$")
+#+END_SRC
+* Editor config
+#+BEGIN_SRC emacs-lisp
+  (use-package editorconfig
+    :ensure t
+    :diminish "EC"
+    :config
+    (editorconfig-mode 1))
 #+END_SRC
 * Flycheck
 #+BEGIN_SRC emacs-lisp
-(use-package flycheck
-  :ensure t
-  :config
-  (add-hook 'after-init-hook #'global-flycheck-mode))
+  (use-package flycheck
+    :ensure t
+    :diminish "FC"
+    :config
+    (add-hook 'after-init-hook #'global-flycheck-mode))
 #+END_SRC
 * Modeline
 ** A small trim of the original
 #+BEGIN_SRC emacs-lisp
-  (setq-default mode-line-format '("%e"
-                                   mode-line-front-space
-                                   " "
-                                   mode-line-modified
-                                   " "
-                                   "%[" mode-line-buffer-identification "%]"
-                                   "   "
-                                   "L%l"
-                                   "  "
-                                   "C%c"
-                                   "   "
-                                   mode-line-modes
-                                   mode-line-misc-info
-                                   projectile-mode-line
-                                   " "
-                                   (vc-mode vc-mode)
-                                   mode-line-end-spaces))
+  ;; (setq-default mode-line-format '("%e"
+  ;;                                  mode-line-front-space
+  ;;                                  " "
+  ;;                                  mode-line-modified
+  ;;                                  " "
+  ;;                                  "%[" mode-line-buffer-identification "%]"
+  ;;                                  "   "
+  ;;                                  "L%l"
+  ;;                                  "  "
+  ;;                                  "C%c"
+  ;;                                  "   "
+  ;;                                  mode-line-modes
+  ;;                                  mode-line-misc-info
+  ;;                                  projectile-mode-line
+  ;;                                  " "
+  ;;                                  (vc-mode vc-mode)
+  ;;                                  mode-line-end-spaces))
 #+END_SRC
 ** Load Tarsius' minions
 #+BEGIN_SRC emacs-lisp
-  (use-package minions
+  ;; (use-package minions
+  ;;   :ensure t
+  ;;   :config (minions-mode 1))
+#+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package powerline
     :ensure t
-    :config (minions-mode 1))
+    :init
+    (powerline-center-theme))
+  (add-hook 'after-init-hook 'powerline-reset)
 #+END_SRC
