@@ -1,6 +1,6 @@
-;;; = init.el =
-;;; Commentary
-;;; Code
+;;; init.el --- Summary
+;;; Commentary:
+;;; Code:
 
 (eval-when-compile (require 'cl))
 (lexical-let ((emacs-start-time (current-time)))
@@ -33,9 +33,6 @@
 			                   ("org"   . "https://orgmode.org/elpa/")))
 (package-initialize)
 
-(setq tls-checktrust t)
-(setq gnutls-verify-error t)
-
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -47,4 +44,5 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
-;;; --init.el ends here
+(provide 'init)
+;;; init.el ends here
