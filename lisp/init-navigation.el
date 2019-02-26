@@ -8,6 +8,7 @@
   (setq dired-recursive-deletes 'top)
   (define-key dired-mode-map [mouse-2] 'dired-find-file)
   (define-key dired-mode-map (kbd "C-c C-q") 'wdired-change-to-wdired-mode))
+  (global-set-key (kbd "C-x j") 'dired-jump)
 
 (when (maybe-require-package 'diff-hl)
   (with-eval-after-load 'dired
@@ -43,7 +44,7 @@
  helm-split-window-in-side-p nil
  helm-move-to-line-cycle-in-source nil
  helm-ff-search-library-in-sexp t
- helm-scroll-amount 8 
+ helm-scroll-amount 8
  helm-echo-input-in-header-line t
  helm-M-x-fuzzy-match t
  helm-completion-in-region-fuzzy-match t)
@@ -77,7 +78,7 @@
   (add-hook 'after-init-hook 'persp-mode)
   (with-eval-after-load 'projectile
     (define-key projectile-mode-map (kbd "s-p n") 'projectile-persp-switch-project)))
-  
+
 
 (provide 'init-navigation)
 ;;; init-navigation.el ends here
