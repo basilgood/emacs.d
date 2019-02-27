@@ -2,25 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
-;; (require-package 'gruvbox-theme)
-;; (load-theme 'gruvbox-dark-hard t)
-;; (require-package 'zerodark-theme)
-;; (load-theme 'zerodark t)
-(require-package 'atom-one-dark-theme)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (load-theme 'atom-one-dark t)
-(atom-one-dark-with-color-variables
-(custom-theme-set-faces
- 'atom-one-dark
- `(whitespace-space                         ((t (:background ,atom-one-dark-bg :foreground ,atom-one-dark-mono-3 :weight light))))
- `(whitespace-hspace                        ((t (:background ,atom-one-dark-bg :foreground ,atom-one-dark-mono-3))))
- `(whitespace-tab                           ((t (:background ,atom-one-dark-bg :foreground ,atom-one-dark-mono-3))))
- `(whitespace-newline                       ((t (:background ,atom-one-dark-bg :foreground ,atom-one-dark-mono-3))))
- `(whitespace-trailing                      ((t (:background ,atom-one-dark-bg :foreground ,atom-one-dark-red-1))))
- `(whitespace-line                          ((t (:background ,atom-one-dark-bg :foreground ,atom-one-dark-red-1))))
- `(whitespace-space-before-tab              ((t (:background ,atom-one-dark-bg :foreground ,atom-one-dark-mono-3))))
- `(whitespace-indentation                   ((t (:background ,atom-one-dark-bg :foreground ,atom-one-dark-mono-3))))
- `(whitespace-empty                         ((t (:background ,nil :foreground ,nil))))
- `(whitespace-space-after-tab               ((t (:background ,atom-one-dark-bg :foreground ,atom-one-dark-mono-3))))))
 
 (require-package 'whitespace)
 (add-hook 'after-init-hook 'global-whitespace-mode)
@@ -46,7 +29,7 @@
      (set-frame-font
       "DejaVuSansMono Nerd Font"))))
 (dejavu-font-check)
-(set-face-attribute 'default nil :height 120 :weight 'regular)
+(set-face-attribute 'default nil :height 100 :weight 'regular)
 (add-hook 'after-make-frame-functions 'dejavu-font-check)
 
 (set-face-background 'mode-line "#38322a")

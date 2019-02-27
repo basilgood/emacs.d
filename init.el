@@ -25,10 +25,12 @@
 
 (require 'init-themes)
 (require 'init-defaults)
+(require 'init-utils)
 (require 'init-navigation)
 (require 'init-search)
 (require 'init-lang)
 (require 'init-flycheck)
+(require 'init-git)
 
 (when (file-exists-p custom-file)
   (load custom-file))
