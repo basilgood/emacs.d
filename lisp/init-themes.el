@@ -29,7 +29,7 @@
      (set-frame-font
       "DejaVuSansMono Nerd Font"))))
 (dejavu-font-check)
-(set-face-attribute 'default nil :height 100 :weight 'regular)
+(set-face-attribute 'default nil :height 120 :weight 'regular)
 (add-hook 'after-make-frame-functions 'dejavu-font-check)
 
 (set-face-background 'mode-line "#38322a")

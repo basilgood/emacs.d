@@ -2,6 +2,18 @@
 ;;; Commentary:
 ;;; Code:
 
+;; Undo tree
+(require-package 'undo-tree)
+(with-eval-after-load 'undo-tree
+  (setq undo-tree-auto-save-history t)
+  (setq undo-tree-history-directory-alist '((user-emacs-directory/undo)))
+  (undo-tree-mode))
+;; make ctrl-z undo
+(global-set-key (kbd "C-z") 'undo)
+;; make ctrl-Z redo
+(defalias 'redo 'undo-tree-redo)
+(global-set-key (kbd "C-S-z") 'redo)
+
 ;; Huge files
 (require-package 'vlf)
 (defun ffap-vlf ()

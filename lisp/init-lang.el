@@ -16,7 +16,13 @@
   (add-to-list 'auto-mode-alist '("\\.yml\\.erb\\'" . yaml-mode))
   (add-hook 'yaml-mode-hook 'goto-address-prog-mode))
 
-(maybe-require-package 'nix-mode)
+(when (maybe-require-package 'nix-mode)
+  (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
+  (add-hook 'nix-mode-common-hook
+    (function (lambda ()
+                (add-hook 'before-save-hook
+                  'nix-mode-format)))))
+
 (maybe-require-package 'json-mode)
 (maybe-require-package 'coffee-mode)
 (with-eval-after-load 'coffee-mode
@@ -37,6 +43,12 @@
     (add-hook 'typescript-mode-hook 'add-node-modules-path))
   (with-eval-after-load 'js2-mode
     (add-hook 'js2-mode-hook 'add-node-modules-path)))
+
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+(add-hook 'yaml-mode-hook
+  '(lambda ()
+     (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 
 (provide 'init-lang)
 ;;; init-lang.el ends here
