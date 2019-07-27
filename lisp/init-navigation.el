@@ -19,35 +19,23 @@
 (setq ag-reuse-window 't)
 (setq ag-reuse-buffers 't)
 
+(require-package 'flx)
+(require-package 'helm-flx)
 (require-package 'helm)
 (add-hook 'after-init-hook 'helm-mode)
 (with-eval-after-load 'helm-mode
   (diminish 'helm-mode))
+(add-hook 'after-init-hook 'helm-flx-mode)
+(with-eval-after-load 'helm-flx-mode)
+(setq helm-M-x-fuzzy-match t)
+(setq helm-locate-fuzzy-match t)
+(setq helm-lisp-fuzzy-completion t)
+(setq helm-bookmark-show-location t)
+(setq helm-buffer-max-length 30)
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
 (global-set-key (kbd "C-x b") 'helm-buffers-list)
 (global-set-key (kbd "M-x") 'helm-M-x)
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-
-(setq
- helm-quick-update t
- helm-idle-delay 0.01
- helm-input-idle-delay 0.01
- helm-ff-search-library-in-sexp t
- helm-split-window-default-side 'other
- helm-split-window-in-side-p t
- helm-candidate-number-limit 100
- helm-M-x-fuzzy-match t
- helm-buffers-fuzzy-matching t
- helm-recentf-fuzzy-match t
- helm-semantic-fuzzy-match t
- helm-imenu-fuzzy-match t
- helm-split-window-in-side-p nil
- helm-move-to-line-cycle-in-source nil
- helm-ff-search-library-in-sexp t
- helm-scroll-amount 8
- helm-echo-input-in-header-line t
- helm-M-x-fuzzy-match t
- helm-completion-in-region-fuzzy-match t)
 
 (require 'helm-config)
 (with-eval-after-load 'helm
@@ -79,6 +67,21 @@
   (with-eval-after-load 'projectile
     (define-key projectile-mode-map (kbd "s-p n") 'projectile-persp-switch-project)))
 
+(when(maybe-require-package 'eyebrowse)
+  (diminish eyebrowse-mode)
+  (add-hook 'after-init-hook 'eyebrowse-mode)
+  (with-eval-after-load 'eyebrowse
+    (progn
+      (define-key eyebrowse-mode-map (kbd "M-0") 'eyebrowse-switch-to-window-config-0)
+      (define-key eyebrowse-mode-map (kbd "M-1") 'eyebrowse-switch-to-window-config-1)
+      (define-key eyebrowse-mode-map (kbd "M-2") 'eyebrowse-switch-to-window-config-2)
+      (define-key eyebrowse-mode-map (kbd "M-3") 'eyebrowse-switch-to-window-config-3)
+      (define-key eyebrowse-mode-map (kbd "M-4") 'eyebrowse-switch-to-window-config-4)
+      (define-key eyebrowse-mode-map (kbd "M-5") 'eyebrowse-switch-to-window-config-5)
+      (define-key eyebrowse-mode-map (kbd "M-6") 'eyebrowse-switch-to-window-config-6)
+      (define-key eyebrowse-mode-map (kbd "M-7") 'eyebrowse-switch-to-window-config-7))))
+(setq eyebrowse-mode-line-separator " "
+  eyebrowse-new-workspace t)
 
 (provide 'init-navigation)
 ;;; init-navigation.el ends here
