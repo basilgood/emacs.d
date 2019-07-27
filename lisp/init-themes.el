@@ -2,35 +2,29 @@
 ;;; Commentary:
 ;;; Code:
 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(load-theme 'atom-one-dark t)
+;; (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+;; (load-theme 'atom-one-dark t)
+(require-package 'zenburn-theme)
+(load-theme 'zenburn t)
+(with-eval-after-load "zenburn-theme"
+  (zenburn-with-color-variables
+    (custom-theme-set-faces
+     'zenburn
+     `(default ((t (:foreground ,zenburn-fg :background ,zenburn-bg)))))))
 
 (require-package 'whitespace)
 (add-hook 'after-init-hook 'global-whitespace-mode)
-(with-eval-after-load 'global-whitespace-mode
-  (diminish 'whitespace-mode))
-
+(diminish 'whitespace-mode)
 (progn
-  (setq whitespace-style (quote (face spaces tabs newline space-mark tab-mark newline-mark )))
+  (setq whitespace-style (quote (spaces tabs  space-mark tab-mark)))
   (setq whitespace-display-mappings
-        '(
-          (space-mark 32 [183] [46])
-          (tab-mark 9 [9655 9] [92 9])
-          )))
-(global-set-key (kbd "C-c w") 'whitespace-cleanup)
+    '(
+       (space-mark 32 [183] [46]) ; SPACE 32 「 」, 183 MIDDLE DOT 「·」, 46 FULL STOP 「.」
+       ;; (tab-mark 9 [9655 9] [92 9]) ; tab
+       (tab-mark     ?\t    [?\u00BB ?\t] [?\\ ?\t])
+       )))
 
-(defun dejavu-font-check (&optional frame)
-  (when frame
-    (select-frame frame))
-  (condition-case nil
-      (set-frame-font
-       "SauceCodePro Nerd Font")
-    (error
-     (set-frame-font
-      "DejaVuSansMono Nerd Font"))))
-(dejavu-font-check)
-(set-face-attribute 'default nil :height 120 :weight 'regular)
-(add-hook 'after-make-frame-functions 'dejavu-font-check)
+(set-frame-font "DejaVuSansMono Nerd Font 11")
 
 (set-face-background 'mode-line "#38322a")
 (set-face-background 'mode-line-inactive "#1c1c1c")
