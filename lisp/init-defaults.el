@@ -122,14 +122,16 @@ With arg N, insert N newlines."
   (split-window-below)
   (balance-windows)
   (other-window 1))
-(global-set-key (kbd "C-x 2") 'split-and-follow-horizontally)
+(global-set-key (kbd "C-2") 'split-and-follow-horizontally)
 
 (defun split-and-follow-vertically ()
   (interactive)
   (split-window-right)
   (balance-windows)
   (other-window 1))
-(global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
+(global-set-key (kbd "C-3") 'split-and-follow-vertically)
+
+(windmove-default-keybindings)
 
 (defun kill-current-buffer ()
   "Kills the current buffer."
