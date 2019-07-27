@@ -19,37 +19,26 @@
 (setq ag-reuse-window 't)
 (setq ag-reuse-buffers 't)
 
-(require-package 'flx)
-(require-package 'helm-flx)
-(require-package 'helm)
-(add-hook 'after-init-hook 'helm-mode)
-(with-eval-after-load 'helm-mode
-  (diminish 'helm-mode))
-(add-hook 'after-init-hook 'helm-flx-mode)
-(with-eval-after-load 'helm-flx-mode)
-(setq helm-M-x-fuzzy-match t)
-(setq helm-locate-fuzzy-match t)
-(setq helm-lisp-fuzzy-completion t)
-(setq helm-bookmark-show-location t)
-(setq helm-buffer-max-length 30)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "C-x b") 'helm-buffers-list)
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-
-(require 'helm-config)
-(with-eval-after-load 'helm
-  (helm-autoresize-mode))
-(add-to-list 'display-buffer-alist
-             `(,(rx bos "*helm" (* not-newline) "*" eos)
-               (display-buffer-in-side-window)
-               (inhibit-same-window . t)
-               (window-height . 0.381)))
-
-(require-package 'helm-ag)
-(global-set-key (kbd "M-p") 'helm-ag-project-root)
-(setq helm-ag-insert-at-point 'symbol
-      helm-ag-command-option "--path-to-ignore ~/.agignore")
+(when (maybe-require-package 'helm)
+  (require-package 'flx)
+  (require-package 'smex)
+  (require-package 'dash)
+  (require-package 'helm-flx)
+  (require-package 'helm-swoop)
+  (require-package 'helm-fuzzier)
+  (require-package 'helm-smex)
+  (add-hook 'after-init-hook 'helm-mode 'helm-flx-mode 'helm-fuzzier-mode)
+  (with-eval-after-load 'helm
+    (diminish 'helm-mode)
+    (progn
+      (global-set-key (kbd "C-x C-f") #'helm-find-files)
+      (global-set-key (kbd "C-x b") 'helm-buffers-list)
+      (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+      (global-set-key [remap execute-extended-command] #'helm-smex)
+      (global-set-key (kbd "M-X") #'helm-smex-major-mode-commands))))
+(setq helm-always-two-windows nil)
+(setq helm-display-buffer-default-height 15)
+(setq helm-default-display-buffer-functions '(display-buffer-in-side-window))
 
 (when (maybe-require-package 'projectile)
   (add-hook 'after-init-hook 'projectile-mode)
