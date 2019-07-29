@@ -71,7 +71,7 @@
 (windmove-default-keybindings)
 
 (defun kill-current-buffer ()
-  "Kills the current buffer."
+  "Kill the current buffer."
   (interactive)
   (kill-buffer (current-buffer)))
 (global-set-key (kbd "C-x k") 'kill-current-buffer)
@@ -104,13 +104,19 @@
   (setq uniquify-ignore-buffers-re "^\\*"))
 
 (global-set-key (kbd "M-/") 'hippie-expand)
-
-(setq hippie-expand-try-functions-list
-      '(try-complete-file-name-partially
-        try-complete-file-name
-        try-expand-dabbrev
-        try-expand-dabbrev-all-buffers
-        try-expand-dabbrev-from-kill))
+(setq hippie-expand-try-functions-list '(try-expand-dabbrev
+                                         try-expand-dabbrev-all-buffers
+                                         try-expand-dabbrev-from-kill
+                                         try-complete-file-name-partially
+                                         try-complete-file-name
+                                         try-expand-all-abbrevs
+                                         try-expand-list
+                                         try-expand-line
+                                         try-complete-lisp-symbol-partially
+                                         try-complete-lisp-symbol))
 
 (provide 'base)
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars)
+;; End:
 ;;; base.el ends here
