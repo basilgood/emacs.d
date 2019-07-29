@@ -1,4 +1,4 @@
-;;; package --- init file
+;;; init.el --- init file
 ;;; Commentary:
 ;;; Code:
 
@@ -45,4 +45,7 @@
 
 (provide 'init)
 
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars)
+;; End:
 ;;; init.el ends here
