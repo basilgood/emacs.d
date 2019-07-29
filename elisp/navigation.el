@@ -1,4 +1,4 @@
-;;; navigation.el
+;;; navigation.el --- sum
 ;;; Commentary:
 ;;; Code:
 
@@ -41,4 +41,7 @@
 (use-package neotree :straight t)
 
 (provide 'navigation)
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars)
+;; End:
 ;;; navigation.el ends here
