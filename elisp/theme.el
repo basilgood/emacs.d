@@ -36,18 +36,14 @@
 
 (use-package whitespace
   :init
-  (global-whitespace-mode t)
-  :diminish whitespace-mode WS
+  (dolist (hook '(prog-mode-hook text-mode-hook))
+    (add-hook hook #'whitespace-mode))
+  (add-hook 'before-save-hook #'whitespace-cleanup)
   :config
-  (progn
-    (setq whitespace-style (quote (spaces tabs  space-mark tab-mark)))
-    (setq whitespace-display-mappings
-      '(
-         (space-mark 32 [183] [46]) ; SPACE 32 「 」, 183 MIDDLE DOT 「·」, 46 FULL STOP 「.」
-         ;; (tab-mark 9 [9655 9] [92 9]) ; tab
-         (tab-mark     ?\t    [?\u00BB ?\t] [?\\ ?\t])
-         ))))
+  (setq whitespace-line-column 80) ;; limit line length
+  (setq whitespace-style '('spaces tabs space-mark tab-mark)))(provide 'theme)
 
-(provide 'theme)
-
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars)
+;; End:
 ;;; theme.el ends here
