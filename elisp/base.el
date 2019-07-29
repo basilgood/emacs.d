@@ -1,4 +1,4 @@
-;;; init-defaults.el --- Behaviour specific to non-TTY frames -*- lexical-binding: t -*-
+;;; base.el --- Behaviour specific to non-TTY frames -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -69,6 +69,8 @@
 (cua-selection-mode t)
 
 (windmove-default-keybindings)
+
+(electric-pair-mode t)
 
 (defun kill-current-buffer ()
   "Kill the current buffer."
