@@ -10,7 +10,7 @@
 (use-package browse-at-remote
   :straight t
   :bind
-  (("C-c b r" . browse-at-remote)))
+  ("C-c b r" . 'browse-at-remote))
 
 (use-package async
   :straight t
@@ -58,11 +58,7 @@
     '(normal replace operator motion emacs)
     'global
     (kbd ";;") 'save-buffer)
-  (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit))
+  (define-key key-translation-map (kbd "ESC") (kbd "C-g")))
 
 (use-package undo-tree
   :init
@@ -91,8 +87,19 @@
   (global-set-key (kbd "C-x g") 'magit-status)
   (global-set-key (kbd "C-x M-g") 'magit-dispatch))
 
-(provide 'utils)
+(use-package diff-hl
+  :straight t
+  :init
+  (global-diff-hl-mode)
+  (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
+(use-package which-key
+  :straight t
+  :init
+  (which-key-mode))
+
+(provide 'utils)
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars)
 ;; End:
