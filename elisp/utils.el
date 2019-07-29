@@ -44,9 +44,11 @@
     "b" 'helm-buffers-list
     "p" 'helm-find-files
     "k" 'kill-this-buffer
-    "\\"  'save-buffer
+    "\\" 'save-buffer
     "c" 'comment-line
     "x" 'evil-window-delete
+    "n" 'neotree-toggle
+    "e" 'eval-last-sexp
   ))
 
 (use-package evil
@@ -69,6 +71,25 @@
         `((".*" . ,temporary-file-directory)))
   (setq undo-tree-auto-save-history t))
 
+(use-package evil-commentary
+  :straight t
+  :init
+  (evil-commentary-mode))
+
+(use-package evil-visualstar
+  :straight t
+  :init
+  (global-evil-visualstar-mode))
+
+(use-package evil-matchit
+  :straight t
+  :init
+  (global-evil-matchit-mode))
+
+(use-package evil-surround
+  :straight t
+  :init
+  (global-evil-surround-mode))
 
 (use-package volatile-highlights
   :straight t
