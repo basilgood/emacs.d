@@ -1,4 +1,4 @@
-;;; base.el --- Behaviour specific to non-TTY frames -*- lexical-binding: t -*-
+;;; base.el --- Sum
 ;;; Commentary:
 ;;; Code:
 
