@@ -42,6 +42,9 @@
   :straight t
   :bind ("C-=" . er/expand-region))
 
+(use-package rainbow-delimiters
+  :straight t)
+
 (use-package evil-leader
   :straight t
   :demand t
