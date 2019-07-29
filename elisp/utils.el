@@ -32,6 +32,16 @@
   (add-hook 'prog-mode-hook (editorconfig-mode 1))
   (add-hook 'text-mode-hook (editorconfig-mode 1)))
 
+(use-package multiple-cursors
+  :straight t
+  :bind (("M-." . mc/mark-next-like-this)
+         ("M-," . mc/unmark-next-like-this)
+         ("C-S-<mouse-1>" . mc/add-cursor-on-click)))
+
+(use-package expand-region
+  :straight t
+  :bind ("C-=" . er/expand-region))
+
 (use-package evil-leader
   :straight t
   :demand t
@@ -49,6 +59,7 @@
     "x" 'evil-window-delete
     "n" 'neotree-toggle
     "e" 'eval-last-sexp
+    "a" 'align-regexp
   ))
 
 (use-package evil
