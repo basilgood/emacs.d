@@ -19,6 +19,8 @@
   (dired-async-mode 1)
   (async-bytecomp-package-mode 1))
 
+(use-package ag :straight t)
+
 (use-package ediff
   :config
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -55,7 +57,7 @@
     "," 'other-window
     "." 'mode-line-other-buffer
     "b" 'helm-buffers-list
-    "p" 'helm-find-files
+    "f" 'helm-find-files
     "k" 'kill-this-buffer
     "\\" 'save-buffer
     "c" 'comment-line
