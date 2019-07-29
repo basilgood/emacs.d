@@ -19,8 +19,6 @@
   (dired-async-mode 1)
   (async-bytecomp-package-mode 1))
 
-(use-package ag :straight t)
-
 (use-package ediff
   :config
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
