@@ -1,4 +1,4 @@
-;;; utils.el
+;;; utils.el --- summary-
 ;;; Commentary:
 ;;; Code:
 
@@ -39,16 +39,14 @@
   (global-evil-leader-mode)
   (evil-leader/set-leader "\\")
   (evil-leader/set-key
-    ","  'other-window
-    "."  'mode-line-other-buffer
-    "b"  'helm-buffers-list
-    "x"  'helm-smex
-    "p"  'helm-find-files
-    "k"  'kill-this-buffer
+    "," 'other-window
+    "." 'mode-line-other-buffer
+    "b" 'helm-buffers-list
+    "p" 'helm-find-files
+    "k" 'kill-this-buffer
     "\\"  'save-buffer
     "c" 'comment-line
-    "h" 'split-and-follow-horizontally
-    "v" 'split-and-follow-vertically
+    "x" 'evil-window-delete
   ))
 
 (use-package evil
@@ -60,13 +58,21 @@
     '(normal replace operator motion emacs)
     'global
     (kbd ";;") 'save-buffer)
-  (define-key evil-normal-state-map [escape] 'keyboard-escape-quit)
-  (define-key evil-visual-state-map [escape] 'keyboard-quit)
   (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
   (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
   (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
   (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
   (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit))
+
+(use-package undo-tree
+  :init
+  (global-undo-tree-mode)
+  :diminish undo-tree ""
+  :config
+  (setq undo-tree-history-directory-alist
+        `((".*" . ,temporary-file-directory)))
+  (setq undo-tree-auto-save-history t))
+
 
 (use-package volatile-highlights
   :straight t
@@ -76,16 +82,18 @@
 
 (use-package git-timemachine
   :straight t
-  :config
+  :init
   (global-set-key (kbd "C-x v t") 'git-timemachine-toggle))
-
-
 
 (use-package magit
   :straight t
-  :config
+  :init
   (global-set-key (kbd "C-x g") 'magit-status)
   (global-set-key (kbd "C-x M-g") 'magit-dispatch))
 
 (provide 'utils)
+
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars)
+;; End:
 ;;; utils.el ends here
