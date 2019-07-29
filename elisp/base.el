@@ -56,9 +56,6 @@
   (setq display-line-numbers-width-start t)
   (add-hook 'prog-mode-hook 'display-line-numbers-mode))
 
-(autoload 'zap-up-to-char "misc" "Kill up to, but not including ARGth occurrence of CHAR.")
-(global-set-key (kbd "M-Z") 'zap-up-to-char)
-
 (global-unset-key (kbd "C-z"))
 
 (put 'narrow-to-region 'disabled nil)
