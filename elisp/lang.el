@@ -2,14 +2,13 @@
 ;;; Commentary:
 ;;; Code:
 
-(use-package yaml-mode
-  :straight t)
-(use-package 'nix-mode)
-  (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
-  (add-hook 'nix-mode-common-hook
-    (function (lambda ()
-                (add-hook 'before-save-hook
-                  'nix-mode-format)))))
+(use-package yaml-mode :straight t)
+
+(use-package nix-mode
+  :straight t
+  :mode "\\.nix\\'")
+
+(provide 'lang)
 ;; Local Variables:
 ;; byte-compile-warnings: (not free-vars)
 ;; End:
