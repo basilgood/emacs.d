@@ -74,7 +74,7 @@
     '(normal replace operator motion emacs)
     'global
     (kbd ";;") 'save-buffer)
-  (define-key key-translation-map (kbd "esc") (kbd "c-g")))
+  (define-key key-translation-map (kbd "ESC") (kbd "C-g")))
 
 (use-package undo-tree
   :init
