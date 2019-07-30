@@ -52,10 +52,6 @@
 
 (global-hl-line-mode t)
 
-(when (fboundp 'display-line-numbers-mode)
-  (setq display-line-numbers-width-start t)
-  (add-hook 'prog-mode-hook 'display-line-numbers-mode))
-
 (global-unset-key (kbd "C-z"))
 
 (put 'narrow-to-region 'disabled nil)
