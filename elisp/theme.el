@@ -9,18 +9,11 @@
       (set-face-attribute f nil :height 1.0))))
 
 (set-face-attribute 'default nil
-                    :family "Hack Nerd Font"
-                    :height 140
-                    :weight 'normal
-                    :width 'normal)
-
-(when (functionp 'set-fontset-font)
-  (set-fontset-font "fontset-default"
-                    'unicode
-                    (font-spec :family "DejaVu Sans Mono"
-                               :width 'normal
-                               :size 15.5
-                               :weight 'normal)))
+  :family "DejaVu Sans Mono"
+  :height 110
+  :weight 'normal
+  :width 'normal
+  :underline nil)
 
 (use-package color-theme-sanityinc-tomorrow
   :straight t
@@ -30,7 +23,7 @@
   (color-theme-sanityinc-tomorrow-night)
   (global-hl-line-mode 1)
   (custom-set-faces
-   '(cursor ((t :background "#eebb28")))))
+    '(cursor ((t :background "#eebb28")))))
 
 (use-package spaceline
   :straight t
