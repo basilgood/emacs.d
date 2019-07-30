@@ -9,7 +9,7 @@
       (set-face-attribute f nil :height 1.0))))
 
 (set-face-attribute 'default nil
-                    :family "MesloLGS Nerd Font"
+                    :family "Hack Nerd Font"
                     :height 140
                     :weight 'normal
                     :width 'normal)
