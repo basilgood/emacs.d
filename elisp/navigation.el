@@ -10,43 +10,39 @@
   (setq dired-dwim-target t)
   (require 'dired-x))
 
-(use-package helm
-  :straight t
-  :demand t
-  :straight flx
-  :straight dash
-  :straight helm-flx
-  :straight helm-swoop
-  :straight helm-fuzzier
-  :straight helm-smex
-  :hook (helm-mode)
-  :hook (helm-flx-mode)
-  :hook (helm-fuzzier-mode)
-  :diminish helm-mode ""
-  :bind ("M-x" . helm-smex)
-          ("C-x C-f" . helm-find-files)
-          ("C-x f" . helm-recentf)
-          ("M-y" . helm-show-kill-ring)
-          ("C-x b" . helm-buffers-list))
-
-(use-package helm-files
-  :straight nil
-  :bind (:map helm-find-files-map
-          ("<left>" . helm-find-files-up-one-level)
-          ("<right>" . helm-execute-persistent-action)))
-(setq helm-always-two-windows nil
-  helm-display-buffer-default-height 20
-  helm-default-display-buffer-functions '(display-buffer-in-side-window))
+(use-package ag :straight t)
 
 (use-package projectile
   :straight t
+  :diminish projectile "P"
   :init
-  (setq projectile-completion-system 'helm)
+  (setq projectile-completion-system 'ivy)
   (projectile-global-mode)
   :bind
   ("s-p" . projectile-find-file)
   ("s-g" . projectile-ag)
   ("s-q" . projectile-replace))
+
+(use-package ivy
+  :straight t
+  :diminish ivy ""
+  :bind (("C-c C-r" . ivy-resume)
+         ("C-x B" . ivy-switch-buffer-other-window))
+  :config (ivy-mode)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  (setq ivy-initial-inputs-alist nil)
+  (setq ivy-re-builders-alist
+    '((t . ivy--regex-fuzzy))))
+
+(use-package counsel
+  :straight t
+  :after ivy
+  :straight smex
+  :straight flx
+  :bind
+  ("M-x" . counsel-M-x)
+  ("C-x C-f" . counsel-find-file))
 
 (use-package persp-projectile
   :straight t
@@ -56,23 +52,6 @@
           ("s-n" . projectile-persp-switch-project)))
 
 (use-package neotree :straight t)
-
-(use-package eyebrowse
-  :straight t
-  :init
-  (eyebrowse-mode)
-  :config
-  (progn
-    (define-key eyebrowse-mode-map (kbd "M-0") 'eyebrowse-switch-to-window-config-0)
-    (define-key eyebrowse-mode-map (kbd "M-1") 'eyebrowse-switch-to-window-config-1)
-    (define-key eyebrowse-mode-map (kbd "M-2") 'eyebrowse-switch-to-window-config-2)
-    (define-key eyebrowse-mode-map (kbd "M-3") 'eyebrowse-switch-to-window-config-3)
-    (define-key eyebrowse-mode-map (kbd "M-4") 'eyebrowse-switch-to-window-config-4)
-    (define-key eyebrowse-mode-map (kbd "M-5") 'eyebrowse-switch-to-window-config-5)
-    (define-key eyebrowse-mode-map (kbd "M-6") 'eyebrowse-switch-to-window-config-6)
-    (define-key eyebrowse-mode-map (kbd "M-7") 'eyebrowse-switch-to-window-config-7)))
-(setq eyebrowse-mode-line-separator " "
-  eyebrowse-new-workspace t)
 
 (provide 'navigation)
 ;; Local Variables:

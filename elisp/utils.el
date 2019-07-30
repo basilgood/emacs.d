@@ -35,8 +35,8 @@
 (use-package multiple-cursors
   :straight t
   :bind (("M-." . mc/mark-next-like-this)
-         ("M-," . mc/unmark-next-like-this)
-         ("C-S-<mouse-1>" . mc/add-cursor-on-click)))
+          ("M-," . mc/unmark-next-like-this)
+          ("C-S-<mouse-1>" . mc/add-cursor-on-click)))
 
 (use-package expand-region
   :straight t
@@ -54,8 +54,8 @@
   (evil-leader/set-key
     "," 'other-window
     "." 'mode-line-other-buffer
-    "b" 'helm-buffers-list
-    "f" 'helm-find-files
+    "b" 'counsel-switch-buffer
+    "f" 'counsel-find-file
     "k" 'kill-this-buffer
     "\\" 'save-buffer
     "c" 'comment-line
@@ -63,7 +63,7 @@
     "n" 'neotree-toggle
     "e" 'eval-last-sexp
     "a" 'align-regexp
-  ))
+    ))
 
 (use-package evil
   :straight t
@@ -82,7 +82,7 @@
   :diminish undo-tree ""
   :config
   (setq undo-tree-history-directory-alist
-        `((".*" . ,temporary-file-directory)))
+    `((".*" . ,temporary-file-directory)))
   (setq undo-tree-auto-save-history t))
 
 (use-package evil-commentary
