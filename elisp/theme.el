@@ -25,6 +25,17 @@
   (custom-set-faces
     '(cursor ((t :background "#eebb28")))))
 
+(setq-default display-line-numbers 'directly
+              display-line-numbers-width 3
+              display-line-numbers-widen t)
+(set-face-attribute 'line-number nil
+                    :font "Iosevka Nerd Font-10"
+                    :background "#282c34" :foreground "#5c6370")
+(set-face-attribute 'line-number-current-line nil
+                    :font "Iosevka Nerd Font-10"
+                    :background "grey" :foreground "black")
+
+
 (use-package spaceline
   :straight t
   :init
