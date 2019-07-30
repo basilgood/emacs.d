@@ -7,3 +7,5 @@ auto-save-list
 transient
 /projectile-bookmarks.eld
 /projectile.cache
+/eshell/history
+/eshell/lastdir
