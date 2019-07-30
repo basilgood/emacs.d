@@ -74,7 +74,7 @@
     '(normal replace operator motion emacs)
     'global
     (kbd ";;") 'save-buffer)
-  (define-key key-translation-map (kbd "ESC") (kbd "C-g")))
+  (define-key key-translation-map (kbd "esc") (kbd "c-g")))
 
 (use-package undo-tree
   :init
@@ -87,6 +87,7 @@
 
 (use-package evil-commentary
   :straight t
+  :diminish evil-commentary ""
   :init
   (evil-commentary-mode))
 
@@ -131,6 +132,7 @@
 
 (use-package which-key
   :straight t
+  :diminish which-key ""
   :init
   (which-key-mode))
 
