@@ -24,10 +24,8 @@
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/"))
 
-;; for faster emacs start-up; gets re-set later
 (setq gc-cons-threshold (* 50 1000 1000))
 
-;; set load path
 (add-to-list 'load-path (concat user-emacs-directory "elisp"))
 
 (setq ad-redefinition-action 'accept)
