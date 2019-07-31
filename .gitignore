@@ -9,3 +9,4 @@ transient
 /projectile.cache
 /eshell/history
 /eshell/lastdir
+/custom.el

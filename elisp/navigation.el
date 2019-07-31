@@ -26,14 +26,22 @@
 (use-package ivy
   :straight t
   :diminish ivy ""
-  :bind (("C-c C-r" . ivy-resume)
-         ("C-x B" . ivy-switch-buffer-other-window))
   :config (ivy-mode)
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) ")
   (setq ivy-initial-inputs-alist nil)
   (setq ivy-re-builders-alist
-    '((t . ivy--regex-fuzzy))))
+    '((t . ivy--regex-fuzzy)))
+  (ivy-set-actions
+    'ivy-switch-buffer
+    '(("j" switch-to-buffer-other-frame "other frame")
+       ("k" kill-buffer "kill")
+       ("r" ivy--rename-buffer-action "rename"))))
+
+(use-package swiper
+  :straight t
+  :bind
+  ("\C-s" . 'swiper))
 
 (use-package counsel
   :straight t
