@@ -1,0 +1,591 @@
+#+TITLE: Emacs Literate Configuration
+#+AUTHOR: basilgood
+#+PROPERTY: header-args :tangle yes
+
+* Configuration
+:PROPERTIES:
+:VISIBILITY: children
+:END:
+
+** Emacs Initialisation
+#+BEGIN_SRC emacs-lisp
+(defconst emacs-start-time (current-time))
+
+(defvar file-name-handler-alist-old file-name-handler-alist)
+
+(setq package-enable-at-startup nil
+      file-name-handler-alist nil
+      message-log-max 16384
+      gc-cons-threshold 402653184
+      gc-cons-percentage 0.6
+      byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)
+      auto-window-vscroll nil)
+
+(add-hook 'after-init-hook
+          `(lambda ()
+             (setq file-name-handler-alist file-name-handler-alist-old
+                   gc-cons-threshold 800000
+                   gc-cons-percentage 0.1)
+             (garbage-collect)) t)
+
+(eval-and-compile
+  (defun emacs-path (path)
+    (expand-file-name path user-emacs-directory)))
+
+#+END_SRC
+
+** Personal Information
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "basilgood"
+      user-mail-address "elsile69@yahoo.com")
+#+END_SRC
+
+** Better defaults
+#+BEGIN_SRC emacs-lisp
+(mapc
+ (lambda (mode)
+   (when (fboundp mode)
+     (funcall mode -1)))
+ '(menu-bar-mode tool-bar-mode scroll-bar-mode))
+
+;;; Initialisation
+(setq inhibit-default-init t
+      inhibit-startup-echo-area-message t
+      inhibit-startup-screen t
+      initial-scratch-message nil)
+
+;; warn when opening files bigger than 100MB
+(setq large-file-warning-threshold 100000000)
+
+(defconst em-savefile-dir (expand-file-name "savefile" user-emacs-directory))
+
+;; create the savefile dir if it doesn't exist
+(unless (file-exists-p em-savefile-dir)
+  (make-directory em-savefile-dir))
+
+;;; UI
+;; the blinking cursor is nothing, but an annoyance
+(blink-cursor-mode -1)
+
+;; disable the annoying bell ring
+(setq ring-bell-function 'ignore)
+
+;; disable startup screen
+(setq inhibit-startup-screen t)
+
+;; nice scrolling
+(setq scroll-margin 0
+      scroll-conservatively 100000
+      scroll-preserve-screen-position 1)
+
+;; mode line settings
+(line-number-mode t)
+(column-number-mode t)
+(size-indication-mode t)
+
+;; enable y/n answers
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; more useful frame title, that show either a file or a
+;; buffer name (if the buffer isn't visiting a file)
+(setq frame-title-format
+      '((:eval (if (buffer-file-name)
+                   (abbreviate-file-name (buffer-file-name))
+                 "%b"))))
+
+;; Productive default mode
+(setq initial-major-mode 'org-mode)
+
+;; other defaults
+(setq-default
+  buffers-menu-max-size 30
+  case-fold-search t
+  ediff-split-window-function 'split-window-horizontally
+  ediff-window-setup-function 'ediff-setup-windows-plain
+  tab-width 2
+  indent-tabs-mode nil
+  mouse-yank-at-point t
+  save-interprogram-paste-before-kill t
+  set-mark-command-repeat-pop t
+  tooltip-delay 1.5
+  truncate-lines t
+  truncate-partial-width-windows nil
+  x-wait-for-event-timeout nil)
+
+(let ((no-border '(internal-border-width . 0)))
+  (add-to-list 'default-frame-alist no-border)
+  (add-to-list 'initial-frame-alist no-border))
+
+(add-hook 'term-mode-hook
+  (lambda ()
+    (setq line-spacing 0)))
+
+(delete-selection-mode t)
+(add-hook 'after-init-hook 'transient-mark-mode)
+(set-frame-parameter (selected-frame) 'alpha '(100 100))
+(global-hl-line-mode t)
+(add-hook 'after-init-hook 'show-paren-mode)
+(cua-selection-mode t)
+(windmove-default-keybindings)
+
+;; Keep emacs Custom-settings in separate file.
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(when (file-exists-p custom-file)
+(load custom-file))
+
+;; store all backup and autosave files in the tmp dir
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
+;; revert buffers automatically when underlying files are changed externally
+(global-auto-revert-mode t)
+
+;; Make backups of files, even when they're in version control.
+(setq vc-make-backup-files t)
+
+;; Fix empty pasteboard error.
+(setq save-interprogram-paste-before-kill nil)
+
+;; narrow to region
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+(put 'narrow-to-defun 'disabled nil)
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+
+(global-set-key (kbd "M-/") 'hippie-expand)
+(setq hippie-expand-try-functions-list '(try-expand-dabbrev
+                                          try-expand-dabbrev-all-buffers
+                                          try-expand-dabbrev-from-kill
+                                          try-complete-file-name-partially
+                                          try-complete-file-name
+                                          try-expand-all-abbrevs
+                                          try-expand-list
+                                          try-expand-line
+                                          try-complete-lisp-symbol-partially
+                                          try-complete-lisp-symbol))
+
+#+END_SRC
+* Repos
+
+  #+BEGIN_SRC emacs-lisp
+    (add-to-list 'load-path (expand-file-name "~/.emacs.d/elpa"))
+
+    (setq package-archives '(("gnu"           . "https://elpa.gnu.org/packages/")
+                              ("melpa-stable" . "https://stable.melpa.org/packages/")
+                              ("melpa"        . "https://melpa.org/packages/")
+                              ("org"          . "https://orgmode.org/elpa/")))
+
+    (package-initialize)
+  #+END_SRC
+
+** Straight
+
+    #+BEGIN_SRC emacs-lisp
+      (let ((bootstrap-file
+             (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+            (bootstrap-version 5))
+        (unless (file-exists-p bootstrap-file)
+          (with-current-buffer
+              (url-retrieve-synchronously
+               "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+               'silent 'inhibit-cookies)
+            (goto-char (point-max))
+            (eval-print-last-sexp)))
+        (load bootstrap-file nil 'nomessage))
+    #+END_SRC
+
+** use-package
+
+    #+BEGIN_SRC emacs-lisp
+      (straight-use-package 'use-package)
+      (use-package use-package-ensure-system-package
+        :straight t)
+    #+END_SRC
+
+* Diminish
+
+   #+BEGIN_SRC emacs-lisp
+     (use-package diminish :straight t)
+   #+END_SRC
+* Frame
+
+#+BEGIN_SRC emacs-lisp
+(use-package frame
+  :bind
+  ("C-z" . nil))
+#+END_SRC
+* Recentf
+#+BEGIN_SRC emacs-lisp
+(use-package recentf
+  :straight nil
+  :hook (after-init . recentf-mode)
+  :custom
+  (recentf-max-saved-items 20000000)
+  (recentf-auto-cleanup 'never)
+  (recentf-exclude '((expand-file-name package-user-dir)
+                     ".cache"
+                     "cache"
+                     "recentf"
+                     "COMMIT_EDITMSG\\'"))
+  :preface
+  (defun ladicle/recentf-save-list-silence ()
+    (interactive)
+    (let ((message-log-max nil))
+      (if (fboundp 'shut-up)
+          (shut-up (recentf-save-list))
+        (recentf-save-list)))
+    (message ""))
+  (defun ladicle/recentf-cleanup-silence ()
+    (interactive)
+    (let ((message-log-max nil))
+      (if shutup-p
+          (shut-up (recentf-cleanup))
+        (recentf-cleanup)))
+    (message ""))
+  :hook
+  (focus-out-hook . (ladicle/recentf-save-list-silence ladicle/recentf-cleanup-silence)))
+
+#+END_SRC
+
+* Saveplace
+#+BEGIN_SRC emacs-lisp
+(use-package saveplace
+  :init
+  (setq save-place-file (expand-file-name "saveplace" user-emacs-directory))
+  (setq-default save-place t)
+  (save-place-mode))
+
+#+END_SRC
+* Uniquify
+#+BEGIN_SRC emacs-lisp
+(use-package uniquify
+  :init
+  (setq uniquify-buffer-name-style 'reverse)
+  (setq uniquify-separator " • ")
+  (setq uniquify-after-kill-buffer-p t)
+  (setq uniquify-ignore-buffers-re "^\\*"))
+
+#+END_SRC
+* Ediff
+#+BEGIN_SRC emacs-lisp
+(use-package ediff
+  :config
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+  (setq-default ediff-highlight-all-diffs 'nil)
+  (setq ediff-diff-options "-w"))
+#+END_SRC
+* Vim mode
+#+BEGIN_SRC emacs-lisp
+(use-package evil-leader
+  :straight t
+  :demand t
+  :config
+  (global-evil-leader-mode)
+  (evil-leader/set-leader "\\")
+  (evil-leader/set-key
+    "," 'other-window
+    "." 'mode-line-other-buffer
+    "b" 'counsel-switch-buffer
+    "f" 'counsel-find-file
+    "k" 'kill-this-buffer
+    "\\" 'save-buffer
+    "c" 'comment-line
+    "x" 'evil-window-delete
+    "n" 'neotree-toggle
+    "e" 'eval-last-sexp
+    "a" 'align-regexp
+    ))
+
+(use-package evil
+  :straight t
+  :init
+  (evil-mode)
+  :config
+  (evil-define-key
+    '(normal replace operator motion emacs)
+    'global
+    (kbd ";;") 'save-buffer)
+  (define-key key-translation-map (kbd "ESC") (kbd "C-g")))
+
+(use-package undo-tree
+  :init
+  (global-undo-tree-mode)
+  :diminish undo-tree ""
+  :config
+  (setq undo-tree-history-directory-alist
+    `((".*" . ,temporary-file-directory)))
+  (setq undo-tree-auto-save-history t))
+
+(use-package evil-commentary
+  :straight t
+  :diminish evil-commentary ""
+  :init
+  (evil-commentary-mode))
+
+(use-package evil-visualstar
+  :straight t
+  :init
+  (global-evil-visualstar-mode))
+
+(use-package evil-matchit
+  :straight t
+  :init
+  (global-evil-matchit-mode))
+
+(use-package evil-surround
+  :straight t
+  :init
+  (global-evil-surround-mode))
+#+END_SRC
+* Volatile-highlights 
+#+BEGIN_SRC emacs-lisp
+(use-package volatile-highlights
+  :straight t
+  :diminish volatile-highlights-mode
+  :init
+  (volatile-highlights-mode t))
+#+END_SRC
+* Which-key 
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+  :straight t
+  :diminish which-key ""
+  :init
+  (which-key-mode))
+#+END_SRC
+* Git
+#+BEGIN_SRC emacs-lisp
+(use-package git-timemachine
+  :straight t
+  :init
+  (global-set-key (kbd "C-x v t") 'git-timemachine-toggle))
+
+(use-package magit
+  :straight t
+  :init
+  (global-set-key (kbd "C-x g") 'magit-status)
+  (global-set-key (kbd "C-x M-g") 'magit-dispatch))
+
+(use-package diff-hl
+  :straight t
+  :init
+  (global-diff-hl-mode)
+  (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+
+(use-package browse-at-remote
+  :straight t
+  :bind
+  ("C-c b r" . 'browse-at-remote))
+#+END_SRC
+* Async
+#+BEGIN_SRC emacs-lisp
+(use-package async
+  :straight t
+  :config
+  (autoload 'dired-async-mode "dired-async.el" nil t)
+  (dired-async-mode 1)
+  (async-bytecomp-package-mode 1))
+#+END_SRC
+* Dired
+#+BEGIN_SRC emacs-lisp
+(use-package dired
+  :config
+  (put 'dired-find-alternate-file 'disabled nil)
+  (setq dired-recursive-deletes 'always)
+  (setq dired-recursive-copies 'always)
+  (setq dired-dwim-target t)
+  (require 'dired-x))
+#+END_SRC
+* Ag
+#+BEGIN_SRC emacs-lisp
+(use-package ag :straight t)
+#+END_SRC
+* Projectile
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :straight t
+  :diminish projectile "P"
+  :init
+  (setq projectile-completion-system 'ivy)
+  (projectile-global-mode)
+  :bind
+  ("s-p" . projectile-find-file)
+  ("s-g" . projectile-ag)
+  ("s-q" . projectile-replace))
+  
+(use-package persp-projectile
+  :straight t
+  :init
+  (persp-mode)
+  :bind (:map projectile-mode-map
+          ("s-n" . projectile-persp-switch-project)))
+#+END_SRC
+* Ivy
+#+BEGIN_SRC emacs-lisp
+(use-package ivy
+  :straight t
+  :diminish ivy ""
+  :config 
+  (progn
+  (with-eval-after-load 'ido
+  (ido-mode -1)
+  (ivy-mode)
+  (setq ivy-count-format "(%d/%d) ")
+  (setq ivy-initial-inputs-alist nil)
+  (setq ivy-re-builders-alist
+    '((t . ivy--regex-fuzzy)))
+  (ivy-set-actions
+    'ivy-switch-buffer
+    '(("j" switch-to-buffer-other-frame "other frame")
+       ("k" kill-buffer "kill")
+       ("r" ivy--rename-buffer-action "rename"))))))
+#+END_SRC
+* Swiper
+#+BEGIN_SRC emacs-lisp
+(use-package swiper
+  :straight t
+  :bind
+  ("\C-s" . 'swiper))
+#+END_SRC
+* Counsel
+#+BEGIN_SRC emacs-lisp
+(use-package counsel
+  :straight t
+  :after ivy
+  :straight smex
+  :straight flx
+  :bind
+  ("M-x" . counsel-M-x)
+  ("C-x C-f" . counsel-find-file))
+#+END_SRC
+* Expand-region
+#+BEGIN_SRC emacs-lisp
+(use-package expand-region
+  :straight t
+  :bind ("C-=" . er/expand-region))
+#+END_SRC
+* Multiple-cursors
+#+BEGIN_SRC emacs-lisp
+(use-package multiple-cursors
+  :straight t
+  :bind (("M-." . mc/mark-next-like-this)
+          ("M-," . mc/unmark-next-like-this)
+          ("C-S-<mouse-1>" . mc/add-cursor-on-click)))
+#+END_SRC
+* Editorconfig
+#+BEGIN_SRC emacs-lisp
+(use-package editorconfig
+  :straight t
+  :diminish editorconfig-mode ""
+  :init
+  (add-hook 'prog-mode-hook (editorconfig-mode 1))
+  (add-hook 'text-mode-hook (editorconfig-mode 1)))
+#+END_SRC
+* Whitespace
+#+BEGIN_SRC emacs-lisp
+(use-package whitespace
+  :init
+  (dolist (hook '(prog-mode-hook text-mode-hook))
+    (add-hook hook #'whitespace-mode))
+  (add-hook 'before-save-hook #'whitespace-cleanup)
+  :diminish whitespace ""
+  :config
+  (setq whitespace-line-column 80) ;; limit line length
+  (setq whitespace-style '('tabs tab-mark)))(provide 'theme)
+
+(defun tf-toggle-show-trailing-whitespace ()
+  "Toggle show trailing whitespace between t and nil."
+  (interactive)
+  (setq show-trailing-whitespace (not show-trailing-whitespace)))
+#+END_SRC
+* Flycheck
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :straight t
+  :diminish  flycheck ""
+  :init (global-flycheck-mode))
+#+END_SRC
+* Completion
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :straight t
+  :init (global-company-mode)
+  :config
+  (setq company-idle-delay 0.5)
+  (setq company-show-numbers nil)
+  (setq company-tooltip-limit 10)
+  (setq company-minimum-prefix-length 2)
+  (setq company-tooltip-align-annotations t)
+  (setq company-tooltip-flip-when-above t))
+#+END_SRC
+* Yaml
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode :straight t)
+#+END_SRC
+* Nix
+#+BEGIN_SRC emacs-lisp
+(use-package nix-mode
+  :straight t
+  :mode "\\.nix\\'")
+#+END_SRC
+* Theme
+#+BEGIN_SRC emacs-lisp
+(defun single-font-size ()
+  "Reset all faces to the height of the default face."
+  (dolist (f (face-list))
+    (when (not (equal 'default f))
+      (set-face-attribute f nil :height 1.0))))
+
+(set-face-attribute 'default nil
+  :family "DejaVu Sans Mono"
+  :height 110
+  :weight 'normal
+  :width 'normal
+  :underline nil)
+
+(use-package color-theme-sanityinc-tomorrow
+  :straight t
+  :demand t
+  :config
+  (setf custom-safe-themes t)
+  (color-theme-sanityinc-tomorrow-night)
+  (global-hl-line-mode 1)
+  (custom-set-faces
+    '(cursor ((t :background "#eebb28")))))
+
+(setq-default display-line-numbers 'directly
+              display-line-numbers-width 3
+              display-line-numbers-widen t)
+(set-face-attribute 'line-number nil
+                    :font "DejaVu Sans Mono-9"
+                    :background "#282c34" :foreground "#5c6370")
+(set-face-attribute 'line-number-current-line nil
+                    :font "DejaVu Sans Mono-9"
+                    :background "Darkgreen" :foreground "black")
+#+END_SRC
+* Spaceline
+#+BEGIN_SRC emacs-lisp
+(use-package spaceline
+  :straight t
+  :init
+  (require 'spaceline-config)
+  :config
+  ;; segments
+  (spaceline-spacemacs-theme)
+  ;; (spaceline-emacs-theme)
+  (spaceline-toggle-buffer-size-off)
+  (spaceline-toggle-buffer-id-on)
+  (spaceline-toggle-remote-host-on)
+  (spaceline-toggle-buffer-position-off)
+  (spaceline-toggle-line-column-on)
+  (spaceline-toggle-hud-off)
+  (spaceline-toggle-projectile-root-on)
+  (spaceline-toggle-window-number-on)
+  ;; numbers
+  (setq spaceline-window-numbers-unicode t)
+  (setq spaceline-workspace-numbers-unicode t))
+#+END_SRC
