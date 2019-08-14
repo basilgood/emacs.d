@@ -337,7 +337,7 @@
   :init
   (global-evil-surround-mode))
 #+END_SRC
-* Volatile-highlights 
+* Volatile-highlights
 #+BEGIN_SRC emacs-lisp
 (use-package volatile-highlights
   :straight t
