@@ -345,7 +345,7 @@
   :init
   (volatile-highlights-mode t))
 #+END_SRC
-* Which-key 
+* Which-key
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
   :straight t
