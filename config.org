@@ -304,10 +304,7 @@
   :init
   (evil-mode)
   :config
-  (evil-define-key
-    '(normal replace operator motion emacs)
-    'global
-    (kbd ";;") 'save-buffer)
+  (define-key evil-normal-state-map  (kbd "<backspace>") 'counsel-switch-buffer)
   (define-key key-translation-map (kbd "ESC") (kbd "C-g")))
 
 (use-package undo-tree
