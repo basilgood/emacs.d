@@ -413,7 +413,7 @@
   ("s-p" . projectile-find-file)
   ("s-g" . projectile-ag)
   ("s-q" . projectile-replace))
-  
+
 (use-package persp-projectile
   :straight t
   :init
