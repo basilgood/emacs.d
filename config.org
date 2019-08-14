@@ -426,7 +426,12 @@
 (use-package ivy
   :straight t
   :diminish ivy ""
-  :config 
+  :commands (swiper)
+  :bind
+  (("\C-s" . swiper)
+  ("C-x C-r" . ivy-resume)  ;; find-file-read-only (found in global-map)
+  ("C-x b" . ivy-switch-buffer-other-window))
+  :config
   (progn
   (with-eval-after-load 'ido
   (ido-mode -1)
@@ -443,10 +448,10 @@
 #+END_SRC
 * Swiper
 #+BEGIN_SRC emacs-lisp
-(use-package swiper
-  :straight t
-  :bind
-  ("\C-s" . 'swiper))
+  ;; (use-package swiper
+  ;;   :straight t
+  ;;   :bind
+  ;;   ("\C-s" . 'swiper))
 #+END_SRC
 * Counsel
 #+BEGIN_SRC emacs-lisp
