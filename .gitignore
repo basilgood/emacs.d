@@ -11,3 +11,5 @@ transient
 /eshell/lastdir
 /custom.el
 /config.el
+/.mc-lists.el
+/org-clock-save.el
