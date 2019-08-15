@@ -176,6 +176,7 @@
     (setq-default save-place t)
     (save-place-mode))
 #+END_SRC
+
 * Uniquify
 #+BEGIN_SRC emacs-lisp
   (use-package uniquify
@@ -408,6 +409,7 @@
 #+BEGIN_SRC emacs-lisp
 (use-package use-package-hydra)
 #+END_SRC
+
 * Git
 #+BEGIN_SRC emacs-lisp
   (use-package git-timemachine
@@ -535,6 +537,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
           dired-du-bind-human-toggle 'nil)
     (dired-async-mode) )
 #+END_SRC
+
 * Projectile
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
@@ -553,11 +556,13 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   :bind (:map projectile-mode-map
   ("s-n" . projectile-persp-switch-project)))
 #+END_SRC
+
 * Expand-region
 #+BEGIN_SRC emacs-lisp
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
 #+END_SRC
+
 * Editorconfig
 #+BEGIN_SRC emacs-lisp
 (use-package editorconfig
@@ -566,6 +571,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (add-hook 'prog-mode-hook (editorconfig-mode 1))
   (add-hook 'text-mode-hook (editorconfig-mode 1)))
 #+END_SRC
+
 * Whitespace
 #+BEGIN_SRC emacs-lisp
 (use-package whitespace
@@ -583,6 +589,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (interactive)
   (setq show-trailing-whitespace (not show-trailing-whitespace)))
 #+END_SRC
+
 * Completion
 #+BEGIN_SRC emacs-lisp
 (use-package company
@@ -596,21 +603,25 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (setq company-tooltip-align-annotations t)
   (setq company-tooltip-flip-when-above t))
 #+END_SRC
+
 * Flycheck
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :diminish  flycheck ""
   :init (global-flycheck-mode))
 #+END_SRC
+
 * Yaml
 #+BEGIN_SRC emacs-lisp
   (use-package yaml-mode)
 #+END_SRC
+
 * Nix
 #+BEGIN_SRC emacs-lisp
   (use-package nix-mode
     :mode "\\.nix\\'")
 #+END_SRC
+
 * Theme
 #+BEGIN_SRC emacs-lisp
   (defun single-font-size ()
