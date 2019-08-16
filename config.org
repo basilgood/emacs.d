@@ -343,8 +343,12 @@
         sql-interactive-mode
         org-capture-mode))
     (evil-set-initial-state 'term-mode 'emacs)
-
-    (define-key evil-normal-state-map  (kbd "<backspace>") 'counsel-switch-buffer)
+    (setq evil-emacs-state-cursor  '("red" box))
+    (setq evil-normal-state-cursor '("gray" box))
+    (setq evil-visual-state-cursor '("gray" box))
+    (setq evil-insert-state-cursor '("gray" bar))
+    (setq evil-motion-state-cursor '("gray" box))
+    (define-key evil-normal-state-map  (kbd "<backspace>") 'projectile-switch-to-buffer)
     (define-key key-translation-map (kbd "ESC") (kbd "C-g")))
 
   (use-package undo-tree
