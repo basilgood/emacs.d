@@ -560,21 +560,22 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 
 * Projectile
 #+BEGIN_SRC emacs-lisp
-  (use-package projectile
-  :diminish projectile "P"
-  :init
-  (setq projectile-completion-system 'ivy)
-  (projectile-global-mode)
-  :bind
-  ("s-p" . projectile-find-file)
-  ("s-g" . projectile-ag)
-  ("s-q" . projectile-replace))
+    (use-package projectile
+    :diminish projectile-mode
+    :init
+    (projectile-global-mode)
+    :config
+    (setq projectile-completion-system 'ivy)
+    :bind
+    ("s-p" . projectile-find-file)
+    ("s-g" . projectile-ag)
+    ("s-q" . projectile-replace))
 
-  (use-package persp-projectile
-  :init
-  (persp-mode)
-  :bind (:map projectile-mode-map
-  ("s-n" . projectile-persp-switch-project)))
+    (use-package persp-projectile
+    :init
+    (persp-mode)
+    :bind (:map projectile-mode-map
+    ("s-n" . projectile-persp-switch-project)))
 #+END_SRC
 
 * Expand-region
