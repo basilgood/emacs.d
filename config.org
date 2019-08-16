@@ -1,6 +1,12 @@
 #+TITLE: Emacs Literate Configuration
 #+AUTHOR: basilgood
 #+PROPERTY: header-args :tangle yes
+* Startup
+#+BEGIN_SRC emacs-lisp
+(defvar em/startup-time
+  (current-time))
+#+END_SRC
+
 * Bootstrap
   #+BEGIN_SRC emacs-lisp
     (setq gc-cons-threshold 402653184
@@ -960,3 +966,15 @@
       (setq spaceline-window-numbers-unicode t)
       (setq spaceline-workspace-numbers-unicode t))
   #+END_SRC
+
+* Print-time
+#+BEGIN_SRC emacs-lisp
+(princ (cl-concatenate 'string
+                       "Startup completed in "
+                       (number-to-string (cadr (time-subtract (current-time)
+                                                              em/startup-time)))
+                       " seconds\n\n"
+                       "Today's date: "
+                       (format-time-string "%B %d %Y"))
+       (get-buffer-create (current-buffer)))
+#+END_SRC
