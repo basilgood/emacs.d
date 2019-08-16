@@ -450,20 +450,17 @@
       (prog-mode . rainbow-delimiters-mode))
   #+END_SRC
 
-* Volatile-highlights
-  #+BEGIN_SRC emacs-lisp
-    (use-package volatile-highlights
-      :diminish volatile-highlights-mode
-      :init
-      (volatile-highlights-mode)
-      :custom
-      (vhl/define-extension 'evil 'evil-paste-after 'evil-paste-before
-                            'evil-paste-pop 'evil-move)
-      (vhl/install-extension 'evil)
-      (vhl/define-extension 'undo-tree 'undo-tree-yank 'undo-tree-move)
-      (vhl/install-extension 'undo-tree))
-
-  #+END_SRC
+* Dump-jump
+#+BEGIN_SRC emacs-lisp
+  (use-package dumb-jump
+    :bind (("M-g o" . dumb-jump-go-other-window)
+           ("M-g j" . dumb-jump-go)
+           ("M-g x" . dumb-jump-go-prefer-external)
+           ("M-g z" . dumb-jump-go-prefer-external-other-window))
+    :config (setq dumb-jump-selector 'ivy)
+    :init
+    (dumb-jump-mode))
+#+END_SRC
 
 * Hydra
   #+BEGIN_SRC emacs-lisp
