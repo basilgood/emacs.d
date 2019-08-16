@@ -723,6 +723,25 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     :straight poly-markdown)
 #+END_SRC
 
+* Rust
+#+BEGIN_SRC emacs-lisp
+(use-package rust-mode
+  :mode "\\.rs\\'"
+  :hook (rust-mode . lsp)
+  :config
+  (require 'lsp-clients)
+  (setq rust-format-on-save t)
+  (use-package flycheck-rust
+    :after flycheck
+    :commands flycheck-rust-setup
+    :init
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+
+(use-package cargo
+  :commands cargo-minor-mode
+  :hook (rust-mode . cargo-minor-mode))
+#+END_SRC
+
 * Pdf
 #+BEGIN_SRC emacs-lisp
     (use-package pdf-tools
