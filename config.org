@@ -518,6 +518,7 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     :bind
     ("M-x" . counsel-M-x)
     ("C-x C-f" . counsel-find-file)
+    ("M-y" . counsel-yank-pop)
     ("\C-s" . swiper)
     ("C-x C-r" . ivy-resume)  ;; find-file-read-only (found in global-map)
     ("C-x b" . ivy-switch-buffer-other-window)
