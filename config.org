@@ -373,7 +373,7 @@
     :init
     (global-evil-matchit-mode))
 
-  (use-package evil-surround
+    (use-package evil-surround
     :init
     (global-evil-surround-mode))
 
@@ -387,9 +387,7 @@
              evil-multiedit-next
              evil-multiedit-prev
              evil-multiedit-abort
-             evil-multiedit-ex-match)
-  :config
-  (evil-multiedit-default-keybinds))
+             evil-multiedit-ex-match))
 #+END_SRC
 
 * Which-key
