@@ -118,27 +118,6 @@
       (load custom-file :noerror))
   #+END_SRC
 
-* Functions
-#+BEGIN_SRC emacs-lisp
-  (eval-and-compile
-    (defun emacs-path (path)
-      (expand-file-name path user-emacs-directory))
-    (defvar saved-window-configuration nil)
-
-    (defun push-window-configuration ()
-      (interactive)
-      (push (current-window-configuration) saved-window-configuration))
-
-    (defun pop-window-configuration ()
-      (interactive)
-      (let ((config (pop saved-window-configuration)))
-        (if config
-            (set-window-configuration config)
-          (if (> (length (window-list)) 1)
-              (delete-window)
-            (bury-buffer))))))
-#+END_SRC
-
 * Diminish
   #+BEGIN_SRC emacs-lisp
     (use-package diminish :defer 3)
@@ -410,6 +389,7 @@
       (setq evil-insert-state-cursor '("gray" bar))
       (setq evil-motion-state-cursor '("gray" box))
       (define-key evil-normal-state-map  (kbd "<backspace>") 'projectile-switch-to-buffer)
+      (define-key evil-normal-state-map  (kbd "-") 'dired-jump)
       (define-key key-translation-map (kbd "ESC") (kbd "C-g")))
 
     (use-package undo-tree
@@ -605,43 +585,14 @@
     (use-package dired
       :defer 3
       :straight async
-      :straight dired-du
-      :bind ("C-c j" . dired-two-pane)
-      :bind (:map dired-mode-map
-                  ("j"     . dired)
-                  ("z"     . pop-window-configuration)
-                  ("e"     . ora-ediff-files)
-                  ("l"     . dired-up-directory)
-                  ("q"     . dired-up-directory)
-                  ("<tab>" . dired-next-window)
-                  ("M-G")
-                  ("M-s f"))
-      :bind (("C-x C-d" . dired)
-             :map dired-mode-map
-             ("C-x M-h" . dired-du--toggle-human-readable))
-      :preface
-      (defun dired-two-pane ()
-        (interactive)
-        (push-window-configuration)
-        (let ((here default-directory))
-          (delete-other-windows)
-          (dired "~/Projects")
-          (split-window-horizontally)
-          (dired here)))
-      (defun dired-next-window ()
-        (interactive)
-        (let ((next (car (cl-remove-if-not #'(lambda (wind)
-                                               (with-current-buffer (window-buffer wind)
-                                                 (eq major-mode 'dired-mode)))
-                                           (cdr (window-list))))))
-          (when next
-            (select-window next))))
       :config
+      (put 'dired-find-alternate-file 'disabled nil)
       (require 'dired-x)
       (setq dired-listing-switches "-aBhl --group-directories-first"
+            dired-recursive-deletes 'always
+            dired-recursive-copies 'always
             dired-dwim-target t
-            dired-no-confirm '(copy)
-            dired-du-bind-human-toggle 'nil)
+            dired-no-confirm '(copy))
       (dired-async-mode))
   #+END_SRC
 
