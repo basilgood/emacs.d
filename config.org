@@ -390,6 +390,9 @@
       (setq evil-motion-state-cursor '("gray" box))
       (define-key evil-normal-state-map  (kbd "<backspace>") 'projectile-switch-to-buffer)
       (define-key evil-normal-state-map  (kbd "-") 'dired-jump)
+      (define-key evil-normal-state-map  (kbd "gb") 'browse-at-remote)
+      (define-key evil-normal-state-map  (kbd "gs") 'magit-status)
+      (define-key evil-normal-state-map  (kbd "gt") 'git-timemachine-toggle)
       (define-key key-translation-map (kbd "ESC") (kbd "C-g")))
 
     (use-package undo-tree
@@ -469,14 +472,9 @@
 
 * Git
   #+BEGIN_SRC emacs-lisp
-    (use-package git-timemachine
-      :init
-      (global-set-key (kbd "C-x v t") 'git-timemachine-toggle))
+    (use-package git-timemachine)
 
-    (use-package magit
-      :init
-      (global-set-key (kbd "C-x g") 'magit-status)
-      (global-set-key (kbd "C-x M-g") 'magit-dispatch))
+    (use-package magit)
 
     (use-package git-gutter
       :diminish git-gutter-mode
@@ -493,6 +491,8 @@
 
     (use-package github-pullrequest)
 
+    (use-package browse-at-remote)
+
     (use-package smerge-mode
       :diminish
       :preface
@@ -500,14 +500,14 @@
         (defhydra smerge-hydra
           (:color pink :hint nil :post (smerge-auto-leave))
           "
-    ^Move^       ^Keep^               ^Diff^                 ^Other^
-    ^^-----------^^-------------------^^---------------------^^-------
-    _n_ext       _b_ase               _<_: upper/base        _C_ombine
-    _p_rev       _u_pper              _=_: upper/lower       _r_esolve
-    ^^           _l_ower              _>_: base/lower        _k_ill current
-    ^^           _a_ll                _R_efine
-    ^^           _RET_: current       _E_diff
-    "
+        ^Move^       ^Keep^               ^Diff^                 ^Other^
+        ^^-----------^^-------------------^^---------------------^^-------
+        _n_ext       _b_ase               _<_: upper/base        _C_ombine
+        _p_rev       _u_pper              _=_: upper/lower       _r_esolve
+        ^^           _l_ower              _>_: base/lower        _k_ill current
+        ^^           _a_ll                _R_efine
+        ^^           _RET_: current       _E_diff
+        "
           ("n" smerge-next)
           ("p" smerge-prev)
           ("b" smerge-keep-base)
