@@ -637,6 +637,47 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
     ))
 #+END_SRC
 
+* LSP
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :commands lsp
+    :config
+    (require 'lsp-clients)
+    (setq lsp-auto-guess-root t
+    lsp-prefer-flymake nil
+    lsp-enable-indentation nil
+    lsp-enable-on-type-formatting nil))
+
+  (use-package lsp-ui
+    :hook ((lsp-mode . lsp-ui-mode)
+     (lsp-after-open . (lambda () (lsp-ui-flycheck-enable 1))))
+    :config
+    (require 'lsp-ui-flycheck)
+    (setq lsp-ui-sideline-show-hover nil)
+    :bind (:map lsp-ui-mode-map
+          ("C-c r ." . lsp-ui-peek-find-definitions)
+          ("C-c r ?" . lsp-ui-peek-find-references)
+          ("C-c r d" . lsp-ui-peek-find-definitions)
+          ("C-c r r" . lsp-ui-peek-find-references)
+          ("C-c r i" . lsp-ui-imenu)
+          ("C-c r F" . lsp-ui-sideline-apply-code-actions)
+          ("C-c r R" . lsp-rename)))
+
+  (use-package company-lsp
+    :commands company-lsp
+    :config
+    (add-to-list 'company-backends 'company-lsp)
+    :custom
+    (company-lsp-async t)
+    (company-lsp-enable-snippet t))
+
+  (use-package dap-mode
+    :after lsp-mode
+    :config
+    (dap-mode t)
+    (dap-ui-mode t))
+#+END_SRC
+
 * Yaml
 #+BEGIN_SRC emacs-lisp
   (use-package yaml-mode
