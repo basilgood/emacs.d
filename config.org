@@ -1,5 +1,3 @@
-#+TITLE: Emacs Literate Configuration
-#+AUTHOR: basilgood
 #+PROPERTY: header-args :tangle yes
 * Startup
 #+BEGIN_SRC emacs-lisp
