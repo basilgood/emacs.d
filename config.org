@@ -314,20 +314,19 @@
       :demand t
       :config
       (global-evil-leader-mode)
-      (evil-leader/set-leader "\\")
+      (evil-leader/set-leader "<SPC>")
       (evil-leader/set-key
         "," 'other-window
         "." 'mode-line-other-buffer
         "b" 'counsel-switch-buffer
         "f" 'counsel-find-file
         "k" 'kill-this-buffer
-        "\\" 'save-buffer
-        "c" 'comment-line
+        "w" 'save-buffer
         "x" 'evil-window-delete
-        "n" 'neotree-toggle
         "e" 'eval-last-sexp
         "a" 'align-regexp
         "t" 'shell-pop
+        "h" 'hydra-projectile/body
         ))
 
     (use-package evil
