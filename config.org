@@ -631,18 +631,30 @@
       :diminish projectile-mode
       :init
       (projectile-global-mode)
-      :config
-      (setq projectile-completion-system 'ivy)
       :bind
+      ("M-g a" . hydra-projectile/body)
+      ("s-n" . counsel-projectile-switch-project)
       ("s-p" . projectile-find-file)
       ("s-g" . projectile-ag)
       ("s-q" . projectile-replace))
 
-    (use-package persp-projectile
-      :init
-      (persp-mode)
-      :bind (:map projectile-mode-map
-                  ("s-n" . projectile-persp-switch-project)))
+    (defhydra hydra-projectile (:color pink
+                                       :columns 4)
+      "Projectile"
+      ("f"   projectile-find-file                "Find File")
+      ("r"   projectile-recentf                  "Recent Files")
+      ("z"   projectile-cache-current-file       "Cache Current File")
+      ("x"   projectile-remove-known-project     "Remove Known Project")
+
+      ("d"   projectile-find-dir                 "Find Directory")
+      ("b"   projectile-switch-to-buffer         "Switch to Buffer")
+      ("c"   projectile-invalidate-cache         "Clear Cache")
+      ("X"   projectile-cleanup-known-projects   "Cleanup Known Projects")
+
+      ("o"   projectile-multi-occur              "Multi Occur")
+      ("s"   projectile-switch-project           "Switch Project")
+      ("k"   projectile-kill-buffers             "Kill Buffers")
+      ("q"   nil "Cancel" :color pink))
   #+END_SRC
 
 * Expand-region
