@@ -114,16 +114,8 @@
                                              try-complete-lisp-symbol))
 
     (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-    (when (file-exists-p custom-file)
-      (load custom-file :noerror))
   #+END_SRC
 
-* Server
-#+BEGIN_SRC emacs-lisp
-  (use-package server
-    :no-require
-    :hook (after-init . server-start))
-#+END_SRC
 * Diminish
   #+BEGIN_SRC emacs-lisp
     (use-package diminish :defer 3)
