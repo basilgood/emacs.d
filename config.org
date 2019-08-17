@@ -357,6 +357,9 @@
       (define-key evil-normal-state-map  (kbd "-") 'dired-jump)
       (define-key evil-normal-state-map  (kbd "gb") 'browse-at-remote)
       (define-key evil-normal-state-map  (kbd "gs") 'magit-status)
+      (define-key evil-visual-state-map (kbd "v") 'er/expand-region)
+      (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
+      (define-key evil-insert-state-map (kbd "C-y") 'yank)
       (define-key evil-normal-state-map  (kbd "gt") 'git-timemachine-toggle)
       (define-key key-translation-map (kbd "ESC") (kbd "C-g")))
 
