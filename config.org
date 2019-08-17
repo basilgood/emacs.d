@@ -1,9 +1,9 @@
 #+PROPERTY: header-args :tangle yes
 * Startup
-#+BEGIN_SRC emacs-lisp
-(defvar em/startup-time
-  (current-time))
-#+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (defvar em/startup-time
+      (current-time))
+  #+END_SRC
 
 * Bootstrap
   #+BEGIN_SRC emacs-lisp
@@ -119,6 +119,11 @@
     (use-package diminish :defer 3)
   #+END_SRC
 
+* Hydra
+  #+BEGIN_SRC emacs-lisp
+    (use-package hydra)
+  #+END_SRC
+
 * Org
   #+BEGIN_SRC emacs-lisp
     (straight-override-recipe '(org :type git :host github
@@ -143,6 +148,7 @@
                         "/gtd/tickler.org")))
         (setq org-log-done 'time)
         (setq org-src-fontify-natively t)
+        (setq org-src-tab-acts-natively t)
         (setq org-use-speed-commands t)
         (setq org-capture-templates
               '(("t" "Todo [inbox]" entry
@@ -268,8 +274,7 @@
       :straight nil
       :config
       (setq ediff-window-setup-function 'ediff-setup-windows-plain)
-      (setq-default ediff-highlight-all-diffs 'nil)
-      (setq ediff-diff-options "-w"))
+      (setq-default ediff-highlight-all-diffs 'nil))
   #+END_SRC
 
 * Highlight-line
@@ -361,13 +366,19 @@
       (define-key key-translation-map (kbd "ESC") (kbd "C-g")))
 
     (use-package undo-tree
-      :init
-      (global-undo-tree-mode)
-      :diminish undo-tree ""
+      :diminish (undo-tree-mode . "")
+      :bind (:map undo-tree-map ("C-x u" . hydra-undo-tree/body))
+      :init (defhydra hydra-undo-tree (:hint nil)
+              "
+      _p_: undo  _n_: redo _s_: save _l_: load   "
+              ("p"   undo-tree-undo)
+              ("n"   undo-tree-redo)
+              ("s"   undo-tree-save-history)
+              ("l"   undo-tree-load-history)
+              ("u"   undo-tree-visualize "visualize" :color blue)
+              ("q"   nil "quit" :color blue))
       :config
-      (setq undo-tree-history-directory-alist
-            `((".*" . ,temporary-file-directory)))
-      (setq undo-tree-auto-save-history t))
+      (global-undo-tree-mode))
 
     (use-package evil-commentary
       :diminish evil-commentary ""
@@ -416,21 +427,15 @@
   #+END_SRC
 
 * Dump-jump
-#+BEGIN_SRC emacs-lisp
-  (use-package dumb-jump
-    :bind (("M-g o" . dumb-jump-go-other-window)
-           ("M-g j" . dumb-jump-go)
-           ("M-g x" . dumb-jump-go-prefer-external)
-           ("M-g z" . dumb-jump-go-prefer-external-other-window))
-    :config (setq dumb-jump-selector 'ivy)
-    :init
-    (dumb-jump-mode))
-#+END_SRC
-
-* Hydra
   #+BEGIN_SRC emacs-lisp
-    (use-package hydra)
-    (use-package use-package-hydra)
+    (use-package dumb-jump
+      :bind (("M-g o" . dumb-jump-go-other-window)
+             ("M-g j" . dumb-jump-go)
+             ("M-g x" . dumb-jump-go-prefer-external)
+             ("M-g z" . dumb-jump-go-prefer-external-other-window))
+      :config (setq dumb-jump-selector 'ivy)
+      :init
+      (dumb-jump-mode))
   #+END_SRC
 
 * Git
@@ -485,28 +490,11 @@
     (use-package browse-at-remote)
 
     (use-package smerge-mode
-      :bind ("C-c m" . hydra-smerge/body)
-      :init
-      (progn
-        (defun modi/enable-smerge-maybe ()
-          "Auto-enable `smerge-mode' when merge conflict is detected."
-          (save-excursion
-            (goto-char (point-min))
-            (when (re-search-forward "^<<<<<<< " nil :noerror)
-              (smerge-mode 1))))
-        (add-hook 'find-file-hook #'modi/enable-smerge-maybe :append))
-      :config
-      (progn
-             (defalias 'smerge-keep-upper 'smerge-keep-mine)
-             (defalias 'smerge-keep-lower 'smerge-keep-other)
-             (defalias 'smerge-diff-base-upper 'smerge-diff-base-mine)
-             (defalias 'smerge-diff-upper-lower 'smerge-diff-mine-other)
-             (defalias 'smerge-diff-base-lower 'smerge-diff-base-other))
-
-        (defhydra hydra-smerge (:color pink
-                                       :hint nil
-                                       :pre (smerge-mode 1)
-                                       :post (smerge-auto-leave))
+      :diminish
+      :preface
+      (with-eval-after-load 'hydra
+        (defhydra smerge-hydra
+          (:color pink :hint nil :post (smerge-auto-leave))
           "
     ^Move^       ^Keep^               ^Diff^                 ^Other^
     ^^-----------^^-------------------^^---------------------^^-------
@@ -532,7 +520,20 @@
           ("C" smerge-combine-with-next)
           ("r" smerge-resolve)
           ("k" smerge-kill-current)
-          ("q" nil "cancel" :color pink)))
+          ("ZZ" (lambda ()
+                  (interactive)
+                  (save-buffer)
+                  (bury-buffer))
+           "Save and bury buffer" :color blue)
+          ("q" nil "cancel" :color blue)))
+      :hook ((find-file . (lambda ()
+                            (save-excursion
+                              (goto-char (point-min))
+                              (when (re-search-forward "^<<<<<<< " nil t)
+                                (smerge-mode 1)))))
+             (magit-diff-visit-file . (lambda ()
+                                        (when smerge-mode
+                                          (smerge-hydra/body))))))
   #+END_SRC
 
 * Ag
@@ -540,14 +541,19 @@
     (use-package ag :defer 3)
   #+END_SRC
 
+* Prescient
+  #+BEGIN_SRC emacs-lisp
+    (use-package prescient)
+  #+END_SRC
+
 * Ivy
   #+BEGIN_SRC emacs-lisp
     (use-package counsel
       :demand t
       :diminish ivy-mode counsel-mode
-      :straight counsel-projectile
-      :straight flx
-      :straight smex
+      :straight counsel-projectile :after counsel
+      :straight flx :after counsel
+      :straight smex :after counsel
       :commands (swiper)
       :bind
       ("M-x" . counsel-M-x)
@@ -596,6 +602,10 @@
       :diminish projectile-mode
       :init
       (projectile-global-mode)
+      :config
+      (setq projectile-require-project-root nil
+            projectile-enable-caching t
+            projectile-completion-system 'ivy)
       :bind
       ("M-g a" . hydra-projectile/body)
       ("s-n" . counsel-projectile-switch-project)
@@ -603,21 +613,21 @@
       ("s-g" . projectile-ag)
       ("s-q" . projectile-replace))
 
-    (defhydra hydra-projectile (:color pink
+    (defhydra hydra-projectile (:color yellow
                                        :columns 4)
       "Projectile"
-      ("f"   projectile-find-file                "Find File")
-      ("r"   projectile-recentf                  "Recent Files")
+      ("f"   counsel-projectile-find-file        "Find File")
+      ("r"   counsel-projectile-recentf          "Recent Files")
       ("z"   projectile-cache-current-file       "Cache Current File")
       ("x"   projectile-remove-known-project     "Remove Known Project")
 
-      ("d"   projectile-find-dir                 "Find Directory")
-      ("b"   projectile-switch-to-buffer         "Switch to Buffer")
+      ("d"   counsel-projectile-find-dir         "Find Directory")
+      ("b"   counsel-projectile-switch-to-buffer "Switch to Buffer")
       ("c"   projectile-invalidate-cache         "Clear Cache")
       ("X"   projectile-cleanup-known-projects   "Cleanup Known Projects")
 
       ("o"   projectile-multi-occur              "Multi Occur")
-      ("s"   projectile-switch-project           "Switch Project")
+      ("s"   counsel-projectile-switch-project   "Switch Project")
       ("k"   projectile-kill-buffers             "Kill Buffers")
       ("q"   nil "Cancel" :color pink))
   #+END_SRC
@@ -864,27 +874,27 @@
   #+END_SRC
 
 * Shell-pop
-#+BEGIN_SRC emacs-lisp
-  (use-package shell-pop
-    :config
-    (setq shell-pop-shell-type (quote ("ansi-term" "*ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
-    (setq shell-pop-term-shell "/run/current-system/sw/bin/bash")
-    ;; need to do this manually or not picked up by `shell-pop'
-    (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
-#+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (use-package shell-pop
+      :config
+      (setq shell-pop-shell-type (quote ("ansi-term" "*ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
+      (setq shell-pop-term-shell "/run/current-system/sw/bin/bash")
+      ;; need to do this manually or not picked up by `shell-pop'
+      (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
+  #+END_SRC
 
 * Indent
-#+BEGIN_SRC emacs-lisp
-  (use-package aggressive-indent
-    :diminish aggressive-indent-mode
-    :config
-    (global-aggressive-indent-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'org-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'js-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'sql-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'web-mode))
-#+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (use-package aggressive-indent
+      :diminish aggressive-indent-mode
+      :config
+      (global-aggressive-indent-mode)
+      (add-to-list 'aggressive-indent-excluded-modes 'org-mode)
+      (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
+      (add-to-list 'aggressive-indent-excluded-modes 'js-mode)
+      (add-to-list 'aggressive-indent-excluded-modes 'sql-mode)
+      (add-to-list 'aggressive-indent-excluded-modes 'web-mode))
+  #+END_SRC
 
 * Logview
   #+BEGIN_SRC emacs-lisp
@@ -893,9 +903,9 @@
   #+END_SRC
 
 * Google-this
-#+BEGIN_SRC emacs-lisp
-  (use-package google-this)
-#+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (use-package google-this)
+  #+END_SRC
 
 * Theme
   #+BEGIN_SRC emacs-lisp
@@ -951,13 +961,13 @@
   #+END_SRC
 
 * Print-time
-#+BEGIN_SRC emacs-lisp
-(princ (cl-concatenate 'string
-                       "Startup completed in "
-                       (number-to-string (cadr (time-subtract (current-time)
-                                                              em/startup-time)))
-                       " seconds\n\n"
-                       "Today's date: "
-                       (format-time-string "%B %d %Y"))
-       (get-buffer-create (current-buffer)))
-#+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (princ (cl-concatenate 'string
+                           "Startup completed in "
+                           (number-to-string (cadr (time-subtract (current-time)
+                                                                  em/startup-time)))
+                           " seconds\n\n"
+                           "Today's date: "
+                           (format-time-string "%B %d %Y"))
+           (get-buffer-create (current-buffer)))
+  #+END_SRC
