@@ -34,16 +34,16 @@
           (eval-print-last-sexp)))
       (load bootstrap-file nil 'nomessage))
 
-    (setq-default use-package-always-defer t ; Always defer load package to speed up startup time
-                  use-package-verbose nil ; Don't report loading details
-                  use-package-expand-minimally t  ; make the expanded code as minimal as possible
-                  use-package-enable-imenu-support t) ; Let imenu finds use-package definitions
+    (setq-default use-package-always-defer t
+                  use-package-verbose nil
+                  use-package-expand-minimally t
+                  use-package-enable-imenu-support t)
 
     (straight-use-package 'use-package)
     (setq straight-use-package-by-default t)
   #+END_SRC
 
-* Basic setup
+* Variables
   #+BEGIN_SRC emacs-lisp
     (setq my-sync-directory "~/Dropbox")
     (unbind-key "C-s")
