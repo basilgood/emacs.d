@@ -464,6 +464,7 @@
 
 * Hydra
   #+BEGIN_SRC emacs-lisp
+    (use-package hydra)
     (use-package use-package-hydra)
   #+END_SRC
 
