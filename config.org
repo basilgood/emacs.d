@@ -914,6 +914,11 @@
       :mode ("syslog\\(?:\\.[0-9]+\\)" "\\.log\\(?:\\.[0-9]+\\)?\\'"))
   #+END_SRC
 
+* Google-this
+#+BEGIN_SRC emacs-lisp
+  (use-package google-this)
+#+END_SRC
+
 * Theme
   #+BEGIN_SRC emacs-lisp
     (defun single-font-size ()
