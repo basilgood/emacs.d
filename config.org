@@ -485,27 +485,72 @@
       (git-gutter:added    ((t (:foreground "#50fa7b" :background "#50fa7b"))))
       (git-gutter:deleted  ((t (:foreground "#ff79c6" :background "#ff79c6"))))
       :init
-      (global-git-gutter-mode))
+      (global-git-gutter-mode)
+      :bind
+      ("M-g M-g" . hydra-git-gutter/body))
+
+    (defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
+                                          :hint nil)
+      "
+        Git gutter:
+          _j_: next hunk        _s_tage hunk     _q_uit
+          _k_: previous hunk    _r_evert hunk    _Q_uit and deactivate git-gutter
+          ^ ^                   _p_opup hunk
+          _h_: first hunk
+          _l_: last hunk        set start _R_evision
+        "
+      ("j" git-gutter:next-hunk)
+      ("k" git-gutter:previous-hunk)
+      ("h" (progn (goto-char (point-min))
+                  (git-gutter:next-hunk 1)))
+      ("l" (progn (goto-char (point-min))
+                  (git-gutter:previous-hunk 1)))
+      ("s" git-gutter:stage-hunk)
+      ("r" git-gutter:revert-hunk)
+      ("p" git-gutter:popup-hunk)
+      ("R" git-gutter:set-start-revision)
+      ("q" nil :color pink)
+      ("Q" (progn (git-gutter-mode -1)
+                  (sit-for 0.1)
+                  (git-gutter:clear))
+       :color pink))
 
     (use-package github-pullrequest)
 
     (use-package browse-at-remote)
 
     (use-package smerge-mode
-      :diminish
-      :preface
-      (with-eval-after-load 'hydra
-        (defhydra smerge-hydra
-          (:color pink :hint nil :post (smerge-auto-leave))
+      :bind ("C-c m" . hydra-smerge/body)
+      :init
+      (progn
+        (defun modi/enable-smerge-maybe ()
+          "Auto-enable `smerge-mode' when merge conflict is detected."
+          (save-excursion
+            (goto-char (point-min))
+            (when (re-search-forward "^<<<<<<< " nil :noerror)
+              (smerge-mode 1))))
+        (add-hook 'find-file-hook #'modi/enable-smerge-maybe :append))
+      :config
+      (progn
+             (defalias 'smerge-keep-upper 'smerge-keep-mine)
+             (defalias 'smerge-keep-lower 'smerge-keep-other)
+             (defalias 'smerge-diff-base-upper 'smerge-diff-base-mine)
+             (defalias 'smerge-diff-upper-lower 'smerge-diff-mine-other)
+             (defalias 'smerge-diff-base-lower 'smerge-diff-base-other))
+
+        (defhydra hydra-smerge (:color pink
+                                       :hint nil
+                                       :pre (smerge-mode 1)
+                                       :post (smerge-auto-leave))
           "
-        ^Move^       ^Keep^               ^Diff^                 ^Other^
-        ^^-----------^^-------------------^^---------------------^^-------
-        _n_ext       _b_ase               _<_: upper/base        _C_ombine
-        _p_rev       _u_pper              _=_: upper/lower       _r_esolve
-        ^^           _l_ower              _>_: base/lower        _k_ill current
-        ^^           _a_ll                _R_efine
-        ^^           _RET_: current       _E_diff
-        "
+    ^Move^       ^Keep^               ^Diff^                 ^Other^
+    ^^-----------^^-------------------^^---------------------^^-------
+    _n_ext       _b_ase               _<_: upper/base        _C_ombine
+    _p_rev       _u_pper              _=_: upper/lower       _r_esolve
+    ^^           _l_ower              _>_: base/lower        _k_ill current
+    ^^           _a_ll                _R_efine
+    ^^           _RET_: current       _E_diff
+    "
           ("n" smerge-next)
           ("p" smerge-prev)
           ("b" smerge-keep-base)
@@ -522,20 +567,7 @@
           ("C" smerge-combine-with-next)
           ("r" smerge-resolve)
           ("k" smerge-kill-current)
-          ("ZZ" (lambda ()
-                  (interactive)
-                  (save-buffer)
-                  (bury-buffer))
-           "Save and bury buffer" :color blue)
-          ("q" nil "cancel" :color blue)))
-      :hook ((find-file . (lambda ()
-                            (save-excursion
-                              (goto-char (point-min))
-                              (when (re-search-forward "^<<<<<<< " nil t)
-                                (smerge-mode 1)))))
-             (magit-diff-visit-file . (lambda ()
-                                        (when smerge-mode
-                                          (smerge-hydra/body))))))
+          ("q" nil "cancel" :color pink)))
   #+END_SRC
 
 * Ag
