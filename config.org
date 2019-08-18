@@ -550,35 +550,44 @@
 * Ivy
   #+BEGIN_SRC emacs-lisp
     (use-package counsel
-      :demand t
-      :diminish ivy-mode counsel-mode
-      :straight counsel-projectile :after counsel
-      :straight flx :after counsel
-      :straight smex :after counsel
-      :commands (swiper)
-      :bind
-      ("M-x" . counsel-M-x)
-      ("C-x C-f" . counsel-find-file)
-      ("M-y" . counsel-yank-pop)
-      ("\C-s" . swiper)
-      ("C-x C-r" . ivy-resume)
-      ("C-x b" . ivy-switch-buffer)
+      :defer t
       :config
-      (progn
-        (with-eval-after-load 'ido
-          (ido-mode -1)
-          (ivy-mode)
-          (counsel-mode)
-          (minibuffer-depth-indicate-mode)
-          (counsel-projectile-mode)
-          (setq ivy-height 10
-                ivy-fixed-height-minibuffer t
-                ivy-use-selectable-prompt t
-                enable-recursive-minibuffers t
-                ivy-re-builders-alist '((t . ivy--regex-fuzzy))
-                ivy-count-format "(%d/%d) "
-                max-mini-window-height 0.30
-                ))))
+      (use-package smex
+        :defer t)
+      (use-package flx
+        :defer t)
+      (ivy-mode 1)
+      (setq ivy-use-virtual-buffers t)
+      (setq ivy-count-format "(%d/%d) ")
+      (setq ivy-initial-inputs-alist nil)
+      (setq ivy-re-builders-alist
+            '((t . ivy--regex-fuzzy)))
+
+      :bind (("M-x" . counsel-M-x)
+             ("C-c b" . counsel-imenu)
+             ("C-x C-f" . counsel-find-file)
+             ("C-x b" . ivy-switch-buffer)
+             ("C-x C-a" . counsel-ag)
+             ("C-h f" . counsel-describe-function)
+             ("C-h v" . counsel-describe-variable)
+             ("C-h b" . counsel-descbinds)
+             ("M-y" . counsel-yank-pop)
+             ("M-SPC" . counsel-shell-history)))
+
+    (use-package ivy-prescient
+      :after ivy
+      :init (ivy-prescient-mode))
+
+    (use-package swiper
+      :defer t
+      :bind* ("C-s" . swiper))
+
+    (use-package counsel-projectile
+      :defer t
+      :bind ("C-x r R" . counsel-projectile-ag)
+      :config
+      (add-hook 'text-mode-hook 'counsel-projectile-mode)
+      (add-hook 'prog-mode-hook 'counsel-projectile-mode))
   #+END_SRC
 
 * Dired
