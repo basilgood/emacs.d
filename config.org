@@ -313,7 +313,7 @@
       (imenu-list-auto-resize t))
   #+END_SRC
 
-* Vim mode
+* Vim-mode
   #+BEGIN_SRC  emacs-lisp
     (use-package evil-leader
       :demand t
@@ -362,6 +362,7 @@
       (define-key evil-normal-state-map  (kbd "gs") 'magit-status)
       (define-key evil-visual-state-map (kbd "v") 'er/expand-region)
       (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
+      (define-key evil-insert-state-map (kbd "C-a") 'move-beginning-of-line)
       (define-key evil-insert-state-map (kbd "C-y") 'yank)
       (define-key evil-normal-state-map  (kbd "gt") 'git-timemachine-toggle)
       (define-key key-translation-map (kbd "ESC") (kbd "C-g")))
