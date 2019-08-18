@@ -919,6 +919,16 @@
     (use-package google-this)
   #+END_SRC
 
+* Flyspell
+#+BEGIN_SRC emacs-lisp
+(use-package flyspell
+  :defer 2
+  :init
+    (add-hook 'text-mode-hook 'flyspell-mode)
+  :config
+  (progn
+    (setq ispell-program-name "aspell")))
+#+END_SRC
 * Theme
   #+BEGIN_SRC emacs-lisp
     (defun single-font-size ()
