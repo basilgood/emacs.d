@@ -597,7 +597,7 @@
       :config
       (require 'dired-x)
       (put 'dired-find-alternate-file 'disabled nil)
-      (setq dired-listing-switches "-aBhl --group-directories-first"
+      (setq dired-listing-switches "-alhv --group-directories-first"
             dired-recursive-deletes 'always
             dired-recursive-copies 'always
             dired-dwim-target t
