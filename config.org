@@ -676,11 +676,6 @@
       (company-dabbrev-ignore-case company-dabbrev-downcase)
       :hook
       (after-init . global-company-mode)
-      :straight company-posframe
-      :hook (company-mode . company-posframe-mode)
-      :straight company-prescient
-      :commands company-prescient-mode
-      :hook (company-mode . company-prescient-mode)
       :custom
       (company-idle-delay 0.5)
       (company-show-numbers nil)
@@ -688,6 +683,15 @@
       (company-minimum-prefix-length 2)
       (company-tooltip-align-annotations t)
       (company-tooltip-flip-when-above t))
+
+    (use-package company-posframe
+      :diminish
+      :hook (company-mode . company-posframe-mode))
+
+    (use-package company-prescient
+      :diminish
+      :commands company-prescient-mode
+      :hook (company-mode . company-prescient-mode))
   #+END_SRC
 
 * Flycheck
