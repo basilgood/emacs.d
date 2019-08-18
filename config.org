@@ -41,6 +41,8 @@
 
     (straight-use-package 'use-package)
     (setq straight-use-package-by-default t)
+
+    (use-package no-littering)
   #+END_SRC
 
 * Variables
