@@ -937,6 +937,7 @@
                         :underline nil)
 
     (use-package tomorrow-theme
+      :defer t
       :straight color-theme-sanityinc-tomorrow
       :init (load-theme 'sanityinc-tomorrow-eighties 'no-confirm))
 
