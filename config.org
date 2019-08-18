@@ -929,20 +929,18 @@
                         :width 'normal
                         :underline nil)
 
-    (use-package color-theme-sanityinc-tomorrow
-      :demand t
-      :config
-      (setf custom-safe-themes t)
-      (color-theme-sanityinc-tomorrow-night)
-      (custom-set-faces
-       '(cursor ((t :background "#ffffff")))))
+    (use-package tomorrow-theme
+      :straight color-theme-sanityinc-tomorrow
+      :init (load-theme 'sanityinc-tomorrow-eighties 'no-confirm))
 
     (setq-default display-line-numbers 'directly
                   display-line-numbers-width 3
                   display-line-numbers-widen t)
+
     (set-face-attribute 'line-number nil
                         :font "DejaVu Sans Mono-9"
                         :background "#282c34" :foreground "#5c6370")
+
     (set-face-attribute 'line-number-current-line nil
                         :font "DejaVu Sans Mono-9"
                         :background "#67bcc9" :foreground "#111111")
