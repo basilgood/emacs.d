@@ -551,6 +551,7 @@
   #+BEGIN_SRC emacs-lisp
     (use-package counsel
       :defer t
+      :diminish ivy-mode
       :config
       (use-package smex :defer t)
       (use-package flx :defer t)
@@ -655,7 +656,7 @@
       (add-hook 'text-mode-hook (editorconfig-mode 1)))
   #+END_SRC
 
-* Whitespace
+* White-space
   #+BEGIN_SRC emacs-lisp
     (use-package whitespace
       :init
@@ -842,7 +843,7 @@
     (use-package format-all)
   #+END_SRC
 
-* Pdf
+* PDF
   #+BEGIN_SRC emacs-lisp
     (use-package pdf-tools
       :mode ("\\.pdf\\'" . pdf-view-mode)
@@ -908,7 +909,7 @@
       (add-to-list 'aggressive-indent-excluded-modes 'web-mode))
   #+END_SRC
 
-* Logview
+* Log-view
   #+BEGIN_SRC emacs-lisp
     (use-package logview
       :mode ("syslog\\(?:\\.[0-9]+\\)" "\\.log\\(?:\\.[0-9]+\\)?\\'"))
@@ -921,14 +922,16 @@
 
 * Flyspell
 #+BEGIN_SRC emacs-lisp
-(use-package flyspell
-  :defer 2
-  :init
-    (add-hook 'text-mode-hook 'flyspell-mode)
-  :config
-  (progn
-    (setq ispell-program-name "aspell")))
+  (use-package flyspell
+    :diminish flyspell-mode "s"
+    :defer t
+    :config
+    (setq ispell-program-name "aspell"
+          ispell-extra-args '("--sug-mode=ultra"))
+    (add-hook 'text-mode-hook #'flyspell-mode)
+    (add-hook 'prog-mode-hook #'flyspell-prog-mode))
 #+END_SRC
+
 * Theme
   #+BEGIN_SRC emacs-lisp
     (defun single-font-size ()
