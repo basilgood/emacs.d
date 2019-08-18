@@ -563,7 +563,7 @@
       ("C-x C-f" . counsel-find-file)
       ("M-y" . counsel-yank-pop)
       ("\C-s" . swiper)
-      ("C-x C-r" . ivy-resume)  ;; find-file-read-only (found in global-map)
+      ("C-x C-r" . ivy-resume)
       ("C-x b" . ivy-switch-buffer)
       :config
       (progn
