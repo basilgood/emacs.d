@@ -328,7 +328,6 @@
         "k" 'kill-this-buffer
         "w" 'save-buffer
         "x" 'evil-window-delete
-        "e" 'eval-last-sexp
         "a" 'align-regexp
         "t" 'shell-pop
         "h" 'hydra-projectile/body
