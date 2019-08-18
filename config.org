@@ -140,6 +140,7 @@
       :bind
       ("C-c a" . org-agenda)
       :config
+      (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode 0)))
       (progn
         (setq org-directory "~/org")
         (setq org-agenda-files
