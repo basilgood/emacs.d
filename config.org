@@ -552,10 +552,8 @@
     (use-package counsel
       :defer t
       :config
-      (use-package smex
-        :defer t)
-      (use-package flx
-        :defer t)
+      (use-package smex :defer t)
+      (use-package flx :defer t)
       (ivy-mode 1)
       (setq ivy-use-virtual-buffers t)
       (setq ivy-count-format "(%d/%d) ")
@@ -567,11 +565,11 @@
              ("C-c b" . counsel-imenu)
              ("C-x C-f" . counsel-find-file)
              ("C-x b" . ivy-switch-buffer)
-             ("C-x C-a" . counsel-ag)
+             ("C-k" . ivy-switch-buffer)
              ("C-h f" . counsel-describe-function)
              ("C-h v" . counsel-describe-variable)
              ("C-h b" . counsel-descbinds)
-             ("M-y" . counsel-yank-pop)
+
              ("M-SPC" . counsel-shell-history)))
 
     (use-package ivy-prescient
@@ -593,11 +591,11 @@
 * Dired
   #+BEGIN_SRC emacs-lisp
     (use-package dired
-      :defer 3
+      :defer t
       :straight async
       :config
-      (put 'dired-find-alternate-file 'disabled nil)
       (require 'dired-x)
+      (put 'dired-find-alternate-file 'disabled nil)
       (setq dired-listing-switches "-aBhl --group-directories-first"
             dired-recursive-deletes 'always
             dired-recursive-copies 'always
