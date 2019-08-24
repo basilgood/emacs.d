@@ -1,3 +1,4 @@
+elpa/
 saveplace
 places
 recentf
@@ -14,3 +15,5 @@ transient
 /.mc-lists.el
 /org-clock-save.el
 /var/*
+/flycheck_init.elc
+/savehist
