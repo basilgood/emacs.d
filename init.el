@@ -827,8 +827,8 @@
 
 ;; Mode line format
 (use-package mood-line
-:ensure t
-:defer t)
+  :ensure t
+  :defer t)
 
 ;; config changes made through the customize UI will be stored here
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -836,4 +836,7 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
+;; Local Variables:
+;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
+;; End:
 ;;; init.el ends here
