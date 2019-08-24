@@ -38,6 +38,11 @@
 
 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
+(use-package quelpa-use-package
+    :ensure t
+    :init
+  (setq quelpa-update-melpa-p nil))
+
 ;;; Set window size
 (defun set-frame-size-according-to-resolution ()
   (interactive)
