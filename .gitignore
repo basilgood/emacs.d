@@ -17,3 +17,6 @@ transient
 /var/*
 /flycheck_init.elc
 /savehist
+/persist.el
+/quelpa/cache
+/quelpa/melpa/
