@@ -19,7 +19,8 @@
 (add-hook 'emacs-startup-hook 'startup/reset-gc)
 
 ;;; This is all kinds of necessary
-(require 'package)
+(eval-when-compile
+  (require 'use-package))
 (setq package-enable-at-startup nil)
 
 (add-to-list 'package-archives
