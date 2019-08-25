@@ -1,26 +1,31 @@
 ;;; init.el --- Emacs configuration
 ;;; Commentary:
 ;;; Code:
+;; (require 'emacs-load-time)
 
-(setq gc-cons-threshold 402653184
-      gc-cons-percentage 0.6)
+(defconst emacs-start-time (current-time))
 
-(defvar startup/file-name-handler-alist file-name-handler-alist)
-(setq file-name-handler-alist nil)
+(defvar file-name-handler-alist-old file-name-handler-alist)
 
-(defun startup/revert-file-name-handler-alist ()
-  (setq file-name-handler-alist startup/file-name-handler-alist))
+(setq package-enable-at-startup nil
+      file-name-handler-alist nil
+      message-log-max 16384
+      gc-cons-threshold 402653184
+      gc-cons-percentage 0.6
+      auto-window-vscroll nil)
 
-(defun startup/reset-gc ()
-  (setq gc-cons-threshold 16777216
-	gc-cons-percentage 0.1))
+(add-hook 'after-init-hook
+          `(lambda ()
+             (setq file-name-handler-alist file-name-handler-alist-old
+                   gc-cons-threshold 800000
+                   gc-cons-percentage 0.1)
+             (garbage-collect)) t)
 
-(add-hook 'emacs-startup-hook 'startup/revert-file-name-handler-alist)
-(add-hook 'emacs-startup-hook 'startup/reset-gc)
+(eval-and-compile
+  (defun emacs-path (path)
+    (expand-file-name path user-emacs-directory)))
 
-;;; This is all kinds of necessary
-(eval-when-compile
-  (require 'use-package))
+(require 'package)
 (setq package-enable-at-startup nil)
 
 (add-to-list 'package-archives
