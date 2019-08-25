@@ -424,14 +424,6 @@
   :defer t
   :bind* ("C-s" . swiper))
 
-;; (use-package counsel-projectile
-;;   :ensure t
-;;   :defer t
-;;   :bind ("C-x r R" . counsel-projectile-ag)
-;;   :config
-;;   (add-hook 'text-mode-hook 'counsel-projectile-mode)
-;;   (add-hook 'prog-mode-hook 'counsel-projectile-mode))
-
 (use-package ibuffer
   :ensure t
   :defer t
@@ -715,6 +707,11 @@
   :config
   (hes-mode))
 
+(use-package easy-kill
+  :ensure t
+  :config
+  (global-set-key [remap kill-ring-save] 'easy-kill))
+
 ;;; Vagrant
 (use-package vagrant
   :ensure t
@@ -757,9 +754,9 @@
   :diminish git-gutter-mode
   :config (global-git-gutter-mode)
   :custom
-  (git-gutter:modified-sign "~")		; 
-  (git-gutter:added-sign    "+")		; 
-  (git-gutter:deleted-sign  "-")		; 
+  (git-gutter:modified-sign "~")
+  (git-gutter:added-sign    "+")
+  (git-gutter:deleted-sign  "-")
   :custom-face
   (git-gutter:modified ((t (:foreground "#f1fa8c" :background "#f1fa8c"))))
   (git-gutter:added    ((t (:foreground "#50fa7b" :background "#50fa7b"))))
@@ -784,8 +781,9 @@
 
 (use-package smerge-mode
   :ensure t
-  :defer t
   :diminish
+  :init
+  (setq smerge-command-prefix (kbd "C-c m"))
   :hook ((buffer-list-update . (lambda ()
                         (save-excursion
                           (goto-char (point-min))
@@ -838,6 +836,18 @@
 
 (when (file-exists-p custom-file)
   (load custom-file))
+
+(let ((elapsed (float-time (time-subtract (current-time)
+                                          emacs-start-time))))
+  (message "Loading %s...done (%.3fs)" load-file-name elapsed))
+
+(add-hook 'after-init-hook
+          `(lambda ()
+             (let ((elapsed
+                    (float-time
+                     (time-subtract (current-time) emacs-start-time))))
+               (message "Loading %s...done (%.3fs) [after-init]"
+                        ,load-file-name elapsed))) t)
 
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
