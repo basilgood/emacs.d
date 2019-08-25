@@ -394,24 +394,25 @@
   :ensure t
   :defer t
   :diminish ivy-mode
+  :ensure smex
+  :ensure flx
   :config
-  (use-package smex :defer t :ensure t)
-  (use-package flx :defer t :ensure t)
   (ivy-mode)
-  (setq ivy-use-virtual-buffers t)
+  (setq ivy-use-virtual-buffers nil)
   (setq ivy-count-format "(%d/%d) ")
   (setq ivy-initial-inputs-alist nil)
   (setq ivy-re-builders-alist
-        '((t . ivy--regex-fuzzy)))
+    '((t . ivy--regex-fuzzy)))
   :bind (("M-x" . counsel-M-x)
-         ("C-c b" . counsel-imenu)
-         ("C-x C-f" . counsel-find-file)
-         ("C-x b" . ivy-switch-buffer)
-         ("C-k" . ivy-switch-buffer)
-         ("C-h f" . counsel-describe-function)
-         ("C-h v" . counsel-describe-variable)
-         ("C-h b" . counsel-descbinds)
-         ("M-SPC" . counsel-shell-history)))
+          ("C-d" . ivy-switch-buffer-kill)
+          ("C-c b" . counsel-imenu)
+          ("C-x C-f" . counsel-find-file)
+          ("C-x b" . ivy-switch-buffer)
+          ("C-k" . ivy-switch-buffer)
+          ("C-h f" . counsel-describe-function)
+          ("C-h v" . counsel-describe-variable)
+          ("C-h b" . counsel-descbinds)
+          ("M-SPC" . counsel-shell-history)))
 
 (use-package ivy-prescient
   :ensure t
