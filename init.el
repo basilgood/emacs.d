@@ -352,35 +352,39 @@
    dired-dwim-target t
    dired-listing-switches "-alhv --group-directories-first"
    dired-no-confirm '(copy))
+  (define-key dired-mode-map "-" 'dired-up-directory)
+  (define-key dired-mode-map (kbd "<left>") 'dired-up-directory)
+  (define-key dired-mode-map (kbd "<right>") 'dired-find-alternate-file)
+  (define-key dired-mode-map (kbd "<return>") 'dired-find-alternate-file)
   (require 'dired-x)
   (dired-async-mode))
+
 
 (use-package ag
   :defer 2
   :ensure t)
 
-(use-package perspective
+(use-package projectile
   :ensure t
-  :defer 2
-  :commands persp-mode
+  :init
+  (setq projectile-require-project-root nil
+        projectile-enable-caching t
+        projectile-completion-system 'ivy)
   :config
-  (persp-mode))
-
-;; (use-package projectile
-;;   :ensure t
-;;   :diminish
-;;   :config
-;;   (projectile-mode)
-;;   :init
-;;   (setq projectile-require-project-root nil
-;;         projectile-enable-caching t
-;;         projectile-completion-system 'ivy)
-;;   :bind
-;;   ("M-g a" . hydra-projectile/body)
-;;   ("s-n" . counsel-projectile-switch-project)
-;;   ("s-p" . projectile-find-file)
-;;   ("s-g" . projectile-ag)
-;;   ("s-q" . projectile-replace))
+  (projectile-mode))
+(eval-after-load "projectile"
+  '(setq projectile-mode-line
+         '(:eval (list " [Pj:"
+                       (propertize (projectile-project-name)
+                                   'face '(:foreground "#81a2be"))
+                       "]"))))
+(use-package counsel-projectile
+  :ensure t
+  :config
+  (add-hook 'after-init-hook 'counsel-projectile-mode)
+  :bind
+  ("s-n" . counsel-projectile-switch-project)
+  ("s-q" . projectile-replace))
 
 (use-package prescient
   :defer t
