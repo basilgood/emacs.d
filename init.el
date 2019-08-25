@@ -242,6 +242,7 @@
     "w" 'save-buffer
     "x" 'evil-window-delete
     "a" 'align-regexp
+    "m" 'smerge-command-prefix
     "t" 'shell-pop
     "h" 'hydra-projectile/body
     ))
@@ -261,6 +262,7 @@
   :config
   (evil-mode)
   :init
+  (setq evil-search-module 'evil-search)
   (mapc (lambda (m) (add-to-list 'evil-emacs-state-modes m t))
     '(eshell-mode
        calendar-mode
