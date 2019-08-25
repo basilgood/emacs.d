@@ -322,16 +322,13 @@
   (global-evil-surround-mode))
 
 (use-package evil-multiedit
-  :commands (evil-multiedit-match-all
-             evil-multiedit-match-and-next
-             evil-multiedit-match-and-prev
-             evil-multiedit-match-symbol-and-next
-             evil-multiedit-match-symbol-and-prev
-             evil-multiedit-toggle-or-restrict-region
-             evil-multiedit-next
-             evil-multiedit-prev
-             evil-multiedit-abort
-             evil-multiedit-ex-match))
+  :ensure t
+  :after evil
+  :bind (:map evil-normal-state-map
+              ("C-;" . evil-multiedit-match-all))
+  :config
+  (evil-multiedit-default-keybinds)
+  (setq evil-multiedit-smart-match-boundaries nil))
 
 ;;; Which key
 (use-package which-key
