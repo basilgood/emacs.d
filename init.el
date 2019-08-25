@@ -170,7 +170,10 @@
   :defer 3)
 
 (use-package hydra
-:ensure t)
+  :ensure t)
+
+(use-package use-package-hydra
+  :ensure t)
 
 (use-package savehist
   :init
