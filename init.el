@@ -85,7 +85,7 @@
 (setq initial-scratch-message "")
 
 ;;; Set the font
-(set-face-attribute 'default nil :family "DejaVuSans Mono" :height 120)
+(set-face-attribute 'default nil :family "DejaVuSans Mono" :height 110)
 
 ;;; Disable lock files
 (setq create-lockfiles nil)
@@ -799,10 +799,11 @@
                             (smerge-mode 1)))))))
 
 ;;; Set the theme
-(use-package tomorrow-theme
-  :defer t
-  :ensure color-theme-sanityinc-tomorrow
-  :init (load-theme 'sanityinc-tomorrow-eighties 'no-confirm))
+(use-package atom-one-dark-theme
+  :ensure t
+  :init
+  (setq atom-one-dark-theme t)
+  (load-theme 'atom-one-dark 'no-confirm))
 
 (setq-default display-line-numbers 'directly
               display-line-numbers-width 3
