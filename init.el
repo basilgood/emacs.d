@@ -578,6 +578,14 @@
     mmm-global-mode 'buffers-with-submode-classes
     mmm-submode-decoration-level 0)
   (mmm-add-mode-ext-class 'js-mode "\\.js\\'" 'html)
+  (mmm-add-classes
+    '((js-html
+        :submode html-mode
+        :face mmm-declaration-submode-face
+        :front "[^a-zA-Z]html`" ;; regex to find the opening tag
+        :back "`"))) ;; regex to find the closing tag
+  (mmm-add-mode-ext-class 'js-mode nil 'js-html)
+  (setq mmm-global-mode 'maybe)
   (use-package mmm-auto))
 
 ;;; Yaml mode
