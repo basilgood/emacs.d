@@ -85,7 +85,7 @@
 (setq initial-scratch-message "")
 
 ;;; Set the font
-(set-face-attribute 'default nil :family "Monospace" :height 100)
+(set-face-attribute 'default nil :family "DejaVuSans Mono" :height 120)
 
 ;;; Disable lock files
 (setq create-lockfiles nil)
@@ -809,11 +809,9 @@
               display-line-numbers-widen t)
 
 (set-face-attribute 'line-number nil
-                    :font "DejaVu Sans Mono-9"
                     :background "undefined" :foreground "#5c6370")
 
 (set-face-attribute 'line-number-current-line nil
-                    :font "DejaVu Sans Mono-9"
                     :background "undefined" :foreground "#55cccc")
 
 (setq-default indicate-empty-lines t)
