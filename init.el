@@ -372,7 +372,7 @@
         projectile-completion-system 'ivy)
   :config
   (projectile-mode))
-(eval-after-load "projectile"
+  (eval-after-load "projectile"
   '(setq projectile-mode-line
          '(:eval (list " [Pj:"
                        (propertize (projectile-project-name)
@@ -798,22 +798,19 @@
                           (when (re-search-forward "^<<<<<<< " nil t)
                             (smerge-mode 1)))))))
 
-;;; Set the theme
-(use-package atom-one-dark-theme
+(use-package base16-theme
   :ensure t
-  :init
-  (setq atom-one-dark-theme t)
-  (load-theme 'atom-one-dark 'no-confirm))
+  :config (load-theme 'base16-eighties t))
 
 (setq-default display-line-numbers 'directly
               display-line-numbers-width 3
               display-line-numbers-widen t)
 
-(set-face-attribute 'line-number nil
-                    :background "undefined" :foreground "#5c6370")
+;; (set-face-attribute 'line-number nil
+;;                     :background "undefined" :foreground "#5c6370")
 
-(set-face-attribute 'line-number-current-line nil
-                    :background "undefined" :foreground "#55cccc")
+;; (set-face-attribute 'line-number-current-line nil
+;;                     :background "undefined" :foreground "#55cccc")
 
 (setq-default indicate-empty-lines t)
 
