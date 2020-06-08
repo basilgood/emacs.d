@@ -673,9 +673,9 @@
   (define-key pdf-view-mode-map (kbd "t") 'pdf-annot-add-text-annotation)
   (define-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete))
 
-(use-package org-pdfview
+(use-package org-pdftools
   :ensure t
-  :defer t)
+  :hook (org-load . org-pdftools-setup-link))
 
 (use-package ssh-config-mode
   :ensure t
