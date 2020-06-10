@@ -8,18 +8,18 @@
 (defvar file-name-handler-alist-old file-name-handler-alist)
 
 (setq package-enable-at-startup nil
-      file-name-handler-alist nil
-      message-log-max 16384
-      gc-cons-threshold 402653184
-      gc-cons-percentage 0.6
-      auto-window-vscroll nil)
+  file-name-handler-alist nil
+  message-log-max 16384
+  gc-cons-threshold 402653184
+  gc-cons-percentage 0.6
+  auto-window-vscroll nil)
 
 (add-hook 'after-init-hook
-          `(lambda ()
-             (setq file-name-handler-alist file-name-handler-alist-old
-                   gc-cons-threshold 800000
-                   gc-cons-percentage 0.1)
-             (garbage-collect)) t)
+  `(lambda ()
+     (setq file-name-handler-alist file-name-handler-alist-old
+       gc-cons-threshold 800000
+       gc-cons-percentage 0.1)
+     (garbage-collect)) t)
 
 (eval-and-compile
   (defun emacs-path (path)
@@ -29,9 +29,11 @@
 (setq package-enable-at-startup nil)
 
 (add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/") t)
+  '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives
-	     '("org" . "https://orgmode.org/elpa/") t)
+  '("org" . "https://orgmode.org/elpa/") t)
+(add-to-list 'package-archives
+  '("ublt" . "https://elpa.ubolonton.org/packages/"))
 (setq package-user-dir (expand-file-name "elpa" user-emacs-directory))
 (package-initialize)
 
@@ -44,27 +46,27 @@
 (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
 (use-package quelpa-use-package
-    :ensure t
-    :init
+  :ensure t
+  :init
   (setq quelpa-update-melpa-p nil))
 
 ;;; Set window size
 (defun set-frame-size-according-to-resolution ()
   (interactive)
   (if window-system
-  (progn
-    ;; use 180 char wide window for largeish displays
-    ;; and smaller 80 column windows for smaller displays
-    ;; pick whatever numbers make sense for you
-    (if (> (x-display-pixel-width) 1280)
+    (progn
+      ;; use 180 char wide window for largeish displays
+      ;; and smaller 80 column windows for smaller displays
+      ;; pick whatever numbers make sense for you
+      (if (> (x-display-pixel-width) 1280)
         (add-to-list 'default-frame-alist (cons 'width 180))
-      (add-to-list 'default-frame-alist (cons 'width 80)))
-    ;; for the height, subtract a couple hundred pixels
-    ;; from the screen height (for panels, menubars and
-    ;; whatnot), then divide by the height of a char to
-    ;; get the height we want
-    (add-to-list 'default-frame-alist
-                 (cons 'height (/ (- (x-display-pixel-height) 200) (frame-char-height)))))))
+        (add-to-list 'default-frame-alist (cons 'width 80)))
+      ;; for the height, subtract a couple hundred pixels
+      ;; from the screen height (for panels, menubars and
+      ;; whatnot), then divide by the height of a char to
+      ;; get the height we want
+      (add-to-list 'default-frame-alist
+        (cons 'height (/ (- (x-display-pixel-height) 200) (frame-char-height)))))))
 
 (set-frame-size-according-to-resolution)
 
@@ -139,9 +141,9 @@
 
 ;;; misc
 (setq sentence-end-double-space 'nil
-      require-final-newline t
-      truncate-lines t
-      delete-by-moving-to-trash t)
+  require-final-newline t
+  truncate-lines t
+  delete-by-moving-to-trash t)
 (delete-selection-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -155,15 +157,15 @@
 ;;; Hippie expand
 (global-set-key (kbd "M-/") 'hippie-expand)
 (setq hippie-expand-try-functions-list '(try-expand-dabbrev
-                                         try-expand-dabbrev-all-buffers
-                                         try-expand-dabbrev-from-kill
-                                         try-complete-file-name-partially
-                                         try-complete-file-name
-                                         try-expand-all-abbrevs
-                                         try-expand-list
-                                         try-expand-line
-                                         try-complete-lisp-symbol-partially
-                                         try-complete-lisp-symbol))
+                                          try-expand-dabbrev-all-buffers
+                                          try-expand-dabbrev-from-kill
+                                          try-complete-file-name-partially
+                                          try-complete-file-name
+                                          try-expand-all-abbrevs
+                                          try-expand-list
+                                          try-expand-line
+                                          try-complete-lisp-symbol-partially
+                                          try-complete-lisp-symbol))
 
 (use-package diminish
   :ensure t
@@ -178,8 +180,8 @@
 (use-package savehist
   :init
   (setq savehist-additional-variables
-        '(search-ring regexp-search-ring)
-        savehist-file (expand-file-name "savehist" user-emacs-directory))
+    '(search-ring regexp-search-ring)
+    savehist-file (expand-file-name "savehist" user-emacs-directory))
   :config
   (savehist-mode))
 
@@ -192,9 +194,9 @@
 (use-package recentf
   :init
   (setq recentf-save-file (expand-file-name "recentf" user-emacs-directory)
-        recentf-max-saved-items 500
-        recentf-max-menu-items 15
-        recentf-auto-cleanup 'never)
+    recentf-max-saved-items 500
+    recentf-max-menu-items 15
+    recentf-auto-cleanup 'never)
   :config
   (recentf-mode))
 
@@ -234,13 +236,10 @@
   (global-evil-leader-mode)
   (evil-leader/set-leader "<SPC>")
   (evil-leader/set-key
-    "," 'other-window
-    "." 'mode-line-other-buffer
     "b" 'counsel-switch-buffer
     "f" 'counsel-find-file
     "k" 'kill-this-buffer
     "w" 'save-buffer
-    "x" 'evil-window-delete
     "a" 'align-regexp
     "m" 'smerge-command-prefix
     "t" 'shell-pop
@@ -249,7 +248,7 @@
 
 (use-package evil
   :ensure t
-    :preface
+  :preface
   (defun split-window-vertically-and-switch ()
     (interactive)
     (split-window-vertically)
@@ -277,20 +276,21 @@
        sql-interactive-mode
        org-capture-mode))
   (evil-set-initial-state 'term-mode 'emacs)
-  (setq evil-emacs-state-cursor  '("red" box))
+  (setq evil-emacs-state-cursor '("red" box))
   (setq evil-normal-state-cursor '("gray" box))
   (setq evil-visual-state-cursor '("gray" box))
   (setq evil-insert-state-cursor '("gray" bar))
   (setq evil-motion-state-cursor '("gray" box))
-  (define-key evil-normal-state-map  (kbd "<backspace>") 'projectile-switch-to-buffer)
-  (define-key evil-normal-state-map  (kbd "-") 'dired-jump)
-  (define-key evil-normal-state-map  (kbd "gb") 'browse-at-remote)
-  (define-key evil-normal-state-map  (kbd "gs") 'magit-status)
+  (define-key evil-normal-state-map (kbd "<backspace>") 'projectile-switch-to-buffer)
+  (define-key evil-normal-state-map (kbd "-") 'dired-jump)
+  (define-key evil-normal-state-map (kbd "gb") 'browse-at-remote)
+  (define-key evil-normal-state-map (kbd "gs") 'magit-status)
   (define-key evil-visual-state-map (kbd "v") 'er/expand-region)
   (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
   (define-key evil-insert-state-map (kbd "C-a") 'move-beginning-of-line)
   (define-key evil-insert-state-map (kbd "C-y") 'yank)
-  (define-key evil-normal-state-map  (kbd "gt") 'git-timemachine-toggle)
+  (define-key evil-normal-state-map (kbd "gt") 'git-timemachine-toggle)
+  (define-key evil-normal-state-map (kbd "gr") 'deadgrep)
   (define-key key-translation-map (kbd "ESC") (kbd "C-g")))
 
 (use-package undo-tree
@@ -325,7 +325,7 @@
   :ensure t
   :after evil
   :bind (:map evil-normal-state-map
-              ("C-;" . evil-multiedit-match-all))
+          ("C-;" . evil-multiedit-match-all))
   :config
   (evil-multiedit-default-keybinds)
   (setq evil-multiedit-smart-match-boundaries nil))
@@ -347,11 +347,11 @@
   :config
   (put 'dired-find-alternate-file 'disabled nil)
   (setq
-   dired-recursive-deletes 'always
-   dired-recursive-copies 'always
-   dired-dwim-target t
-   dired-listing-switches "-alhv --group-directories-first"
-   dired-no-confirm '(copy))
+    dired-recursive-deletes 'always
+    dired-recursive-copies 'always
+    dired-dwim-target t
+    dired-listing-switches "-alhv --group-directories-first"
+    dired-no-confirm '(copy))
   (define-key dired-mode-map "-" 'dired-up-directory)
   (define-key dired-mode-map (kbd "<left>") 'dired-up-directory)
   (define-key dired-mode-map (kbd "<right>") 'dired-find-alternate-file)
@@ -368,16 +368,16 @@
   :ensure t
   :init
   (setq projectile-require-project-root nil
-        projectile-enable-caching t
-        projectile-completion-system 'ivy)
+    projectile-enable-caching t
+    projectile-completion-system 'ivy)
   :config
   (projectile-mode))
-  (eval-after-load "projectile"
+(eval-after-load "projectile"
   '(setq projectile-mode-line
-         '(:eval (list " [Pj:"
-                       (propertize (projectile-project-name)
-                                   'face '(:foreground "#81a2be"))
-                       "]"))))
+     '(:eval (list " [Pj:"
+               (propertize (projectile-project-name)
+                 'face '(:foreground "#81a2be"))
+               "]"))))
 (use-package counsel-projectile
   :ensure t
   :config
@@ -429,19 +429,19 @@
   :defer t
   :ensure ibuffer-tramp
   :bind (("C-x C-b" . ibuffer)
-         :map ibuffer-mode-map
-         ("M-o"     . nil)) ;; unbind ibuffer-visit-buffer-1-window
+          :map ibuffer-mode-map
+          ("M-o"     . nil)) ;; unbind ibuffer-visit-buffer-1-window
   :config
   (add-hook 'ibuffer-hook
-            (lambda ()
-              (ibuffer-tramp-set-filter-groups-by-tramp-connection)
-              (ibuffer-do-sort-by-alphabetic))))
+    (lambda ()
+      (ibuffer-tramp-set-filter-groups-by-tramp-connection)
+      (ibuffer-do-sort-by-alphabetic))))
 
 ;;; FZF
 (defun my-lcd ()
   (interactive)
   (fzf/start default-directory
-             (fzf/grep-cmd "lcd" "-l %s")))
+    (fzf/grep-cmd "lcd" "-l %s")))
 
 (use-package fzf
   :ensure t
@@ -450,7 +450,7 @@
   (autoload 'fzf/start "fzf")
   :bind
   (("C-c f" . fzf)
-   ("C-c d" . my-lcd)))
+    ("C-c d" . my-lcd)))
 
 ;;; Expand region
 (use-package expand-region
@@ -494,7 +494,7 @@
   :defer t
   :config
   (setq ispell-program-name "aspell"
-        ispell-extra-args '("--sug-mode=ultra"))
+    ispell-extra-args '("--sug-mode=ultra"))
   (add-hook 'text-mode-hook #'flyspell-mode)
   (add-hook 'prog-mode-hook #'flyspell-prog-mode))
 
@@ -520,34 +520,34 @@
   :diminish (company-mode . " ς")
   :init
   (setq company-minimum-prefix-length 2
-        company-require-match 0
-        company-selection-wrap-around t
-        company-tooltip-limit 10
-        company-show-numbers nil
-        company-idle-delay 0.5)
+    company-require-match 0
+    company-selection-wrap-around t
+    company-tooltip-limit 10
+    company-show-numbers nil
+    company-idle-delay 0.5)
   (setq company-dabbrev-ignore-buffers "\\.pdf\\'"
-        company-dabbrev-downcase nil
-        company-dabbrev-code-modes t
-        company-dabbrev-code-other-buffers 'all
-        company-dabbrev-other-buffers 'all
-        company-dabbrev-code-everywhere t)
-   :config
+    company-dabbrev-downcase nil
+    company-dabbrev-code-modes t
+    company-dabbrev-code-other-buffers 'all
+    company-dabbrev-other-buffers 'all
+    company-dabbrev-code-everywhere t)
+  :config
   (setq company-backends
-        '((;; generic backends
-           company-files          ; files & directory
-           company-keywords       ; keywords
-           company-dabbrev-code   ; code words
-           company-dabbrev        ; words
-           ;; code backends
-           ;; company-elisp          ; emacs-lisp code
-           ;; company-shell       ; shell
-           ;; company-rtags          ; rtags
-           ;; company-ycmd           ; ycmd
-           ;; tag backends
-           ;; company-etags          ; etags
-           ;; company-gtags          ; gtags
-           ;; completion at point
-           company-capf)))
+    '((;; generic backends
+        company-files          ; files & directory
+        company-keywords       ; keywords
+        company-dabbrev-code   ; code words
+        company-dabbrev        ; words
+        ;; code backends
+        ;; company-elisp          ; emacs-lisp code
+        ;; company-shell       ; shell
+        ;; company-rtags          ; rtags
+        ;; company-ycmd           ; ycmd
+        ;; tag backends
+        ;; company-etags          ; etags
+        ;; company-gtags          ; gtags
+        ;; completion at point
+        company-capf)))
   (global-company-mode))
 
 ;;; Node path
@@ -560,15 +560,15 @@
 (use-package web-mode
   :ensure t
   :mode (("\\.html\\'" . web-mode)
-         ("\\.html\\.erb\\'" . web-mode)
-         ("\\.mustache\\'" . web-mode)
-         ("\\.jinja\\'" . web-mode)
-         ("\\.js\\'" . web-mode)
-         ("\\.php\\'" . web-mode))
+          ("\\.html\\.erb\\'" . web-mode)
+          ("\\.mustache\\'" . web-mode)
+          ("\\.jinja\\'" . web-mode)
+          ("\\.js\\'" . web-mode)
+          ("\\.php\\'" . web-mode))
   :init
-    (setq web-mode-engines-alist
-          '(("\\.js\\'"  . "html")
-          '("\\.jinja\\'"  . "django"))))
+  (setq web-mode-engines-alist
+    '(("\\.js\\'"  . "html")
+       '("\\.jinja\\'"  . "django"))))
 
 (use-package mmm-mode
   :ensure t
@@ -593,6 +593,9 @@
   :ensure t
   :defer t
   :mode (".yaml$"))
+
+(use-package typescript-mode
+  :ensure t)
 
 (use-package yaml-tomato :ensure t)
 
@@ -647,8 +650,8 @@
 (use-package json-mode
   :ensure t
   :mode (("\\.json\\'" . json-mode)
-         ("\\.tmpl\\'" . json-mode)
-         ("\\.eslintrc\\'" . json-mode)))
+          ("\\.tmpl\\'" . json-mode)
+          ("\\.eslintrc\\'" . json-mode)))
 
 (use-package format-all
   :ensure t
@@ -720,41 +723,12 @@
   :config
   (global-set-key [remap kill-ring-save] 'easy-kill))
 
-;;; Vagrant
-(use-package vagrant
+;;; grep
+(use-package deadgrep
   :ensure t
   :defer t
-  :commands (vagrant-destroy
-             vagrant-edit
-             vagrant-halt
-             vagrant-provision
-             vagrant-reload
-             vagrant-resume
-             vagrant-ssh
-             vagrant-status
-             vagrant-suspend
-             vagrant-up))
-
-;;; Wgrep
-(use-package wgrep
-  :ensure t
-  :defer t
-  :custom
-  (wgrep-enable-key "e")
-  (wgrep-auto-save-buffer t)
-  (wgrep-change-readonly-file t))
-
-(use-package ag
-  :ensure t
-  :defer t
-  :custom
-  (ag-highligh-search t)
-  (ag-reuse-buffers t)
-  (ag-reuse-window t)
-  :bind
-  ("M-s a" . ag-project)
   :config
-   (use-package wgrep-ag :ensure t))
+  (setq evil-default-state 'emacs))
 
 ;;; Git
 (use-package git-gutter
@@ -779,13 +753,15 @@
   :ensure t
   :defer t)
 
-(use-package github-pullrequest
-  :ensure t
-  :defer t)
-
 (use-package browse-at-remote
   :ensure t
   :defer t)
+
+(use-package git-timemachine
+  :ensure t
+  :defer t
+  :config
+  (setq evil-default-state 'emacs))
 
 (use-package smerge-mode
   :ensure t
@@ -793,24 +769,24 @@
   :init
   (setq smerge-command-prefix (kbd "C-c m"))
   :hook ((buffer-list-update . (lambda ()
-                        (save-excursion
-                          (goto-char (point-min))
-                          (when (re-search-forward "^<<<<<<< " nil t)
-                            (smerge-mode 1)))))))
+                                 (save-excursion
+                                   (goto-char (point-min))
+                                   (when (re-search-forward "^<<<<<<< " nil t)
+                                     (smerge-mode 1)))))))
 
 (use-package base16-theme
   :ensure t
   :config (load-theme 'base16-eighties t))
 
 (setq-default display-line-numbers 'directly
-              display-line-numbers-width 3
-              display-line-numbers-widen t)
+  display-line-numbers-width 3
+  display-line-numbers-widen t)
 
-;; (set-face-attribute 'line-number nil
-;;                     :background "undefined" :foreground "#5c6370")
+(set-face-attribute 'line-number nil
+  :background "undefined" :foreground "#5c6370")
 
-;; (set-face-attribute 'line-number-current-line nil
-;;                     :background "undefined" :foreground "#55cccc")
+(set-face-attribute 'line-number-current-line nil
+  :background "undefined" :foreground "#1c1c1c")
 
 (setq-default indicate-empty-lines t)
 
@@ -842,16 +818,16 @@
   (load custom-file))
 
 (let ((elapsed (float-time (time-subtract (current-time)
-                                          emacs-start-time))))
+                             emacs-start-time))))
   (message "Loading %s...done (%.3fs)" load-file-name elapsed))
 
 (add-hook 'after-init-hook
-          `(lambda ()
-             (let ((elapsed
-                    (float-time
-                     (time-subtract (current-time) emacs-start-time))))
-               (message "Loading %s...done (%.3fs) [after-init]"
-                        ,load-file-name elapsed))) t)
+  `(lambda ()
+     (let ((elapsed
+             (float-time
+               (time-subtract (current-time) emacs-start-time))))
+       (message "Loading %s...done (%.3fs) [after-init]"
+         ,load-file-name elapsed))) t)
 
 ;; Local Variables:
 ;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
