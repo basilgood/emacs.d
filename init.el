@@ -1,49 +1,79 @@
-;;; init.el --- Emacs configuration
+;;; init.el --- Load the full configuration -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 
-(setq gc-cons-threshold 402653184
-  gc-cons-percentage 0.6)
+(let ((normal-gc-cons-threshold (* 20 1024 1024))
+       (init-gc-cons-threshold (* 128 1024 1024)))
+  (setq gc-cons-threshold init-gc-cons-threshold)
+  (add-hook 'emacs-startup-hook
+    (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
-(defvar startup/file-name-handler-alist file-name-handler-alist)
-(setq file-name-handler-alist nil)
-
-(defun startup/revert-file-name-handler-alist ()
-  (setq file-name-handler-alist startup/file-name-handler-alist))
-
-(defun startup/reset-gc ()
-  (setq gc-cons-threshold 16777216
-    gc-cons-percentage 0.1))
-
-(add-hook 'emacs-startup-hook 'startup/revert-file-name-handler-alist)
-(add-hook 'emacs-startup-hook 'startup/reset-gc)
-
-(require 'package)
 (setq package-enable-at-startup nil)
+(require 'package)
 
-(add-to-list 'package-archives
-  '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives
-  '("org" . "https://orgmode.org/elpa/") t)
-(setq package-user-dir (expand-file-name "elpa" user-emacs-directory))
+;; Package Repositories
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+
 (package-initialize)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; Show line number
+;; (global-linum-mode 1)
+(line-number-mode 1)
+(column-number-mode 1)
 
-;;; Disable GUI stuff
+;; display
+(scroll-bar-mode -1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
-(scroll-bar-mode -1)
 (blink-cursor-mode -1)
 (fset #'display-startup-echo-area-message #'ignore)
 (setq inhibit-splash-screen t)
 (setq initial-scratch-message "")
+(setq mode-line-percent-position nil)
+
+;; window configuration
 (winner-mode t)
 
+;; load mouse wheel
+(mwheel-install)
+
+;; doesn't show the nouse on the buffers
+(mouse-avoidance-mode "animate")
+
+;; delete the selected element if paste while it's selected
+(delete-selection-mode 1)
+
+;; move Between buffers using shift+arrow
+(windmove-default-keybindings)
+
+;; hightlight parenthesis that closes/opens the selected parenthesis
+(show-paren-mode 1)
+
+;; pairs
+(setq electric-pair-pairs '(
+                             (?\{ . ?\})
+                             (?\( . ?\))
+                             (?\[ . ?\])
+                             (?\" . ?\")
+                             ))
+(electric-pair-mode t)
+
+;; cursorline
+(global-hl-line-mode t)
+
+;; Basic: Turn off bugging yes-or-no-p
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; Basic: Auto revert mode (Updating buffers when changed on disk)
+(global-auto-revert-mode)
+
 ;;; Set the font
-(set-face-attribute 'default nil :family "DejaVuSans Mono" :height 110)
+(set-face-attribute 'default nil
+                    :family "Monospace"
+                    :height 110
+                    :weight 'normal
+                    :width 'normal)
 
 ;;; Disable lock files
 (setq create-lockfiles nil)
@@ -70,8 +100,11 @@
 (setq auto-window-vscroll nil)
 
 ;;; Use spaces
-(setq indent-tabs-mode nil)
-(setq tab-width 2)
+(setq-default indent-tabs-mode     nil
+  tab-width            2
+  truncate-lines       t
+  line-move-visual     t
+  indicate-empty-lines t)
 
 ;;; misc
 (setq require-final-newline t
@@ -79,11 +112,13 @@
   delete-selection-mode 1)
 (fset 'yes-or-no-p 'y-or-n-p)
 
+;;; Set undo limits
+(setq undo-limit (* 16 1024 1024))
+(setq undo-strong-limit (* 24 1024 1024))
+(setq undo-outer-limit (* 64 1024 1024))
+
 ;;; Do not disable commands
 (setq disabled-command-function nil)
-
-;; revert buffers automatically when underlying files are changed externally
-(global-auto-revert-mode t)
 
 ;; replace buffer-menu with ibuffer
 (global-set-key (kbd "C-x C-b") #'ibuffer)
@@ -91,356 +126,366 @@
 ;; align code in a pretty way
 (global-set-key (kbd "C-x \\") #'align-regexp)
 
-(use-package diminish
-  :ensure t
-  :defer 2)
+;; subwords
+(global-subword-mode 1)
 
-(use-package hydra
-  :ensure t)
+;; ediff
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+(setq ediff-split-window-function (quote split-window-horizontally))
+(add-hook 'ediff-after-quit-hook-internal 'winner-undo)
 
-(use-package use-package-hydra
-  :ensure t)
+;; saveplace
+(require 'saveplace)
+(save-place-mode 1)
 
-(use-package savehist
-  :init
-  (setq savehist-additional-variables
-    '(search-ring regexp-search-ring)
-    savehist-file (expand-file-name "savehist" user-emacs-directory))
-  :config
-  (savehist-mode 1))
+;; following windows splits
+(defun split-and-follow-horizontally ()
+  "."
+  (interactive)
+  (split-window-below)
+  (balance-windows)
+  (other-window 1))
+(global-set-key (kbd "C-x C-2") 'split-and-follow-horizontally)
 
-(use-package saveplace
-  :config
-  (setq-default save-place t)
-  (setq save-place-file (expand-file-name "saveplace" user-emacs-directory))
-  (save-place-mode 1))
+(defun split-and-follow-vertically ()
+  "."
+  (interactive)
+  (split-window-right)
+  (balance-windows)
+  (other-window 1))
+(global-set-key (kbd "C-x C-3") 'split-and-follow-vertically)
 
-(use-package recentf
-  :init
-  (setq recentf-save-file (expand-file-name "recentf" user-emacs-directory)
-    recentf-max-saved-items 500
-    recentf-max-menu-items 15
-    recentf-auto-cleanup 'never)
-  :config
-  (recentf-mode 1))
+(global-set-key (kbd "s-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "s-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "s-C-<down>") 'shrink-window)
+(global-set-key (kbd "s-C-<up>") 'enlarge-window)
 
-(use-package windmove
-  :init
-  (windmove-default-keybindings))
+;; Speed up large files such as SQL backups
+(defun init-large-buffer ()
+  "Setup large buffers to better handle large buffers."
+  (when (> (buffer-size) large-file-warning-threshold)
+    (setq buffer-read-only t)
+    (buffer-disable-undo)))
+(add-hook 'find-file-hook #'init-large-buffer)
 
-(use-package hl-line
-  :ensure nil
-  :hook
-  (after-init . global-hl-line-mode))
+(setq package-selected-packages
+  '(async
+     delight
+     smartparens
+     company
+     flycheck
+     flycheck-indicator
+     helm
+     helm-swoop
+     helm-projectile
+     helm-descbinds
+     helm-ag
+     projectile
+     phi-search
+     multiple-cursors
+     rainbow-delimiters
+     expand-region
+     wrap-region
+     editorconfig
+     which-key
+     shell-pop
+     undo-tree
+     linum-relative
+     nix-mode
+     markdown-mode
+     scss-mode
+     yaml-mode
+     js-doc
+     magit
+     diff-hl
+     solarized-theme
+     simple-modeline
+     god-mode
+     ))
+(package-install-selected-packages)
 
-;;; show-paren-mode
-(use-package paren
-  :ensure nil
-  :config
-  (show-paren-mode)
-  :init
-  (setq show-paren-delay 0))
+(defun install-packages ()
+  "Install all required packages."
+  (interactive)
+  (unless package-archive-contents
+    (package-refresh-contents))
+  (dolist (package package-selected-packages)
+    (unless (package-installed-p package)
+      (package-install package))))
 
-(use-package undo-tree
-  :ensure t
-  :config
-  ;; autosave the undo-tree history
-  (setq undo-tree-history-directory-alist
-        `((".*" . ,temporary-file-directory)))
-  (setq undo-tree-auto-save-history t)
-  (undo-tree-mode))
+(install-packages)
 
-(use-package anzu
-  :ensure t
-  :bind (("M-%" . anzu-isearch-query-replace)
-          ("C-M-%" . anzu-isearch-query-replace-regexp))
-  :config
-  (global-anzu-mode))
+(require 'delight)
+(delight '((eldoc-mode nil "eldoc")))
+(delight '((whitespace-mode nil "whitespace")))
 
-;;; Which key
-(use-package which-key
-  :ensure t
-  :defer 2
-  :diminish
-  :config
-  (which-key-mode))
+(require 'which-key)
+(which-key-mode +1)
 
-;;; Navigation
-(use-package async
-  :ensure t)
+;; god mode
+(require 'god-mode)
+(god-mode)
+(define-key god-local-mode-map (kbd ".") 'repeat)
+(global-set-key (kbd "<escape>") 'god-mode-all)
+(global-set-key (kbd "C-x C-1") #'delete-other-windows)
+(global-set-key (kbd "C-x C-0") #'delete-window)
+(which-key-enable-god-mode-support)
 
-(server-start)
+(defun my-god-mode-update-cursor ()
+  "."
+  (setq cursor-type (if (or god-local-mode buffer-read-only)
+                        'box
+                      'bar)))
+(add-hook 'god-mode-enabled-hook #'my-god-mode-update-cursor)
+(add-hook 'god-mode-disabled-hook #'my-god-mode-update-cursor)
 
-(use-package dired
-  :config
-  (put 'dired-find-alternate-file 'disabled nil)
-  (setq
-    dired-recursive-deletes 'always
-    dired-recursive-copies 'always
-    dired-dwim-target t
-    dired-listing-switches "-alhv --group-directories-first"
-    dired-no-confirm '(copy))
-  (define-key dired-mode-map "-" 'dired-up-directory)
-  (define-key dired-mode-map (kbd "<left>") 'dired-up-directory)
-  (define-key dired-mode-map (kbd "<right>") 'dired-find-alternate-file)
-  (define-key dired-mode-map (kbd "<return>") 'dired-find-alternate-file)
-  (require 'dired-x)
-  (dired-async-mode))
+;; relative numbers
+(require 'linum-relative)
+(setq linum-relative-current-symbol "")
+(add-hook 'prog-mode-hook 'linum-relative-mode)
 
-;;; Expand region
-(use-package expand-region
-  :ensure t
-  :bind ("C-=" . er/expand-region))
+(require 'async)
 
-(use-package ivy
-  :ensure t
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq enable-recursive-minibuffers t))
+(require 'dired)
+(put 'dired-find-alternate-file 'disabled nil)
+(setq
+  dired-recursive-deletes 'always
+  dired-recursive-copies 'always
+  dired-dwim-target t
+  dired-listing-switches "-alhv --group-directories-first"
+  dired-no-confirm '(copy))
+(define-key dired-mode-map (kbd "<left>") 'dired-up-directory)
+(define-key dired-mode-map (kbd "<right>") 'dired-find-alternate-file)
+(define-key dired-mode-map (kbd "<return>") 'dired-find-alternate-file)
+(require 'dired-x)
+(dired-async-mode)
 
-(use-package projectile
-  :ensure t
-  :diminish
-  :init
-  (setq projectile-require-project-root nil
-    projectile-enable-caching t
-    projectile-completion-system 'ivy)
-  :config
-  (projectile-mode))
+;;; History saving
+(require 'savehist)
+(setq history-length 1024)
+(setq history-delete-duplicates t)
+(setq search-ring-max 1024)
+(setq regexp-search-ring-max 1024)
+(setq savehist-additional-variables '(extended-command-history file-name-history search-ring regexp-search-ring))
+(setq savehist-file (expand-file-name ".savehist" user-emacs-directory))
+(savehist-mode)
 
-(use-package counsel-projectile
-  :ensure t
-  :config
-  (add-hook 'after-init-hook 'counsel-projectile-mode)
-  :bind
-  ("s-n" . counsel-projectile-switch-project)
-  ("s-q" . projectile-replace))
+;; editorconfig
+(require 'editorconfig)
+(editorconfig-mode 1)
+(delight '((editorconfig-mode nil "editorconfig")))
 
-(use-package counsel
-  :ensure t
-  :defer t
-  :diminish ivy-mode
-  :ensure smex
-  :ensure flx
-  :config
-  (ivy-mode)
-  (setq ivy-use-virtual-buffers nil)
-  (setq ivy-count-format "(%d/%d) ")
-  (setq ivy-initial-inputs-alist nil)
-  (setq ivy-re-builders-alist
-    '((t . ivy--regex-fuzzy)))
-  :bind (("M-x" . counsel-M-x)
-          ("C-d" . ivy-switch-buffer-kill)
-          ("C-c b" . counsel-imenu)
-          ("C-x C-f" . counsel-find-file)
-          ("C-x b" . ivy-switch-buffer)
-          ("C-h f" . counsel-describe-function)
-          ("C-h v" . counsel-describe-variable)
-          ("C-h b" . counsel-descbinds)
-          ("M-SPC" . counsel-shell-history)))
+;; expand-region
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
 
-(use-package editorconfig
-  :diminish
-  :ensure t
-  :config
-  (editorconfig-mode 1)
-  (add-hook 'editorconfig-custom-hooks
-    (lambda (hash) (setq web-mode-block-padding 0))))
+;; wrap-region
+(require 'wrap-region)
+(wrap-region-global-mode t)
+(delight '((wrap-region-mode nil "wrap-region")))
+(wrap-region-add-wrappers
+  '(
+     ("`" "`")
+     ("*" "*")
+     ))
 
-;; Global autocompletion
-(use-package company
-  :ensure t
-  :hook (after-init . global-company-mode)
-  :diminish
-  :init
-  (setq company-minimum-prefix-length 2)
-  (setq company-idle-delay 0.2))
+;; Helm Mode
+(require 'helm)
+(delight 'helm-mode)
+(require 'helm-config)
+(helm-autoresize-mode 1)
+(require 'helm-projectile)
+(require 'helm-descbinds)
+(require 'helm-ag)
 
-;;; Flycheck
-(use-package flycheck
-  :ensure t
-  :config
-  (add-hook 'after-init-hook #'global-flycheck-mode))
+;; projectile
+(require 'projectile)
+(setq projectile-require-project-root nil
+  projectile-enable-caching t
+  projectile-completion-system 'helm)
+(projectile-global-mode)
+(global-set-key (kbd "s-n") 'helm-projectile-switch-project)
+(global-set-key (kbd "s-/") 'helm-projectile-switch-to-buffer)
+(global-set-key (kbd "s-p") 'helm-projectile-find-file)
+(global-set-key (kbd "s-o") 'projectile-switch-open-project)
+(eval-after-load "projectile"
+  '(setq projectile-mode-line
+     '(:eval (list " [Pj:"
+               (propertize (projectile-project-name)
+                 'face '(:foreground "#81a2be"))))))
 
-;;; Flyspell
-(use-package flyspell
-  :ensure t
-  :diminish
-  :defer t
-  :config
-  (setq ispell-program-name "aspell"
-    ispell-extra-args '("--sug-mode=ultra"))
-  (add-hook 'text-mode-hook #'flyspell-mode)
-  (add-hook 'prog-mode-hook #'flyspell-prog-mode))
+(helm-descbinds-mode)
+(helm-projectile-on)
 
-;; temporarily highlight changes from yanking, etc
-(use-package volatile-highlights
-  :ensure t
-  :diminish
-  :config
-  (volatile-highlights-mode +1))
+(with-eval-after-load "helm"
+  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action))
 
-;;; Node path
-(use-package add-node-modules-path
-  :ensure t
-  :hook ((js2-mode . add-node-modules-path)
-          (rjsx-mode . add-node-modules-path)
-          (js-mode . add-node-modules-path)))
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "M-i") 'helm-swoop)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+(global-set-key (kbd "C-x b") 'helm-mini)
+(global-set-key (kbd "C-x r b") 'helm-bookmarks)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
 
-(use-package web-mode
-  :ensure t
-  :mode (("\\.html\\'" . web-mode)
-          ("\\.html\\.erb\\'" . web-mode)
-          ("\\.mustache\\'" . web-mode)
-          ("\\.jinja\\'" . web-mode)
-          ("\\.js\\'" . web-mode)
-          ("\\.php\\'" . web-mode))
-  :init
-  (setq web-mode-engines-alist
-    '(("\\.js\\'"  . "html")
-       '("\\.jinja\\'"  . "django"))))
+(setq helm-autoresize-max-height 0
+  helm-autoresize-min-height 30
+  helm-buffers-fuzzy-matching t
+  helm-semantic-fuzzy-match t
+  helm-imenu-fuzzy-match t
+  helm-M-x-fuzzy-match t
+  helm-display-header-line nil
+  helm-split-window-in-side-p nil
+  helm-move-to-line-cycle-in-source nil
+  helm-ff-search-library-in-sexp t
+  helm-scroll-amount 8)
+(helm-mode 1)
 
-(use-package mmm-mode
-  :ensure t
-  :commands mmm-mode
-  :config
-  (setq
-    mmm-global-mode 'buffers-with-submode-classes
-    mmm-submode-decoration-level 0)
-  (mmm-add-mode-ext-class 'js-mode "\\.js\\'" 'html)
-  (mmm-add-classes
-    '((js-html
-        :submode html-mode
-        :face mmm-declaration-submode-face
-        :front "[^a-zA-Z]html`" ;; regex to find the opening tag
-        :back "`"))) ;; regex to find the closing tag
-  (mmm-add-mode-ext-class 'js-mode nil 'js-html)
-  (setq mmm-global-mode 'maybe)
-  (use-package mmm-auto))
+;; eshell
+;; use helm to list eshell history
+(require 'helm-eshell)
+(add-hook 'eshell-mode-hook
+  #'(lambda ()
+      (substitute-key-definition 'eshell-list-history 'helm-eshell-history eshell-mode-map)))
 
-;;; Yaml mode
-(use-package yaml-mode
-  :ensure t
-  :defer t
-  :mode (".yaml$"))
+;; company-mode
+(require 'company)
+(setq company-idle-delay 0.3)
+(setq company-tooltip-limit 10)
+(setq company-minimum-prefix-length 2)
+(setq company-tooltip-align-annotations t)
+(setq company-tooltip-flip-when-above t)
+(add-hook 'after-init-hook 'global-company-mode)
+(delight '((company-mode nil "company")))
 
-(use-package typescript-mode
-  :ensure t)
+;; magit
+(require 'magit)
+(setq magit-push-always-verify nil)
+(setq git-commit-summary-max-length 50)
+(add-hook 'after-save-hook 'magit-after-save-refresh-status t)
+(global-set-key (kbd "C-x g") 'magit-status)
+(defun mu-magit-kill-buffers ()
+  "Restore window configuration and kill all Magit buffers."
+  (interactive)
+  (let ((buffers (magit-mode-get-buffers)))
+    (magit-restore-window-configuration)
+    (mapc #'kill-buffer buffers)))
+(eval-after-load 'magit-mode
+  '(define-key magit-status-mode-map (kbd "q") #'mu-magit-kill-buffers))
 
-(use-package yaml-tomato :ensure t)
+;; git-gutter
+(require 'diff-hl)
+(global-diff-hl-mode +1)
+(setq vc-git-diff-switches '("--histogram"))
+(add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+(add-hook 'prog-mode-hook #'diff-hl-mode)
+(add-hook 'org-mode-hook #'diff-hl-mode)
+(add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+(setq diff-hl-fringe-bmp-function 'diff-hl-fringe-bmp-from-type)
 
-(use-package nix-mode
-  :ensure t
-  :defer t
-  :mode "\\.nix\\'")
+;; flycheck
+(require 'flycheck)
+(add-hook 'after-init-hook 'global-flycheck-mode)
+(define-key flycheck-mode-map (kbd "M-n") 'flycheck-next-error)
+(define-key flycheck-mode-map (kbd "M-p") 'flycheck-previous-error)
 
-(use-package scss-mode
-  :ensure t
-  :defer t
-  :mode ("\\.scss\\'")
-  :config
-  (autoload 'scss-mode "scss-mode")
-  (setq scss-compile-at-save 'nil))
+(require 'flycheck-indicator)
+(eval-after-load "flycheck"
+  '(add-hook 'flycheck-mode-hook 'flycheck-indicator-mode))
+(setq flycheck-indicator-icon-error 9632)
+(setq flycheck-indicator-icon-info 9679)
+(setq flycheck-indicator-icon-warning 9650)
+(setq flycheck-indicator-status-icons
+  '((running . "◉")
+     (errored . "◙")
+     (finished . "●")
+     (interrupted . "◘")
+     (suspicious . "◘")
+     (not-checked . "○")))
 
-(use-package markdown-mode
-  :ensure t
-  :defer t
-  :mode ("\\.md$"))
+;; phi-search
+(require 'phi-search)
+(global-set-key (kbd "C-s") 'phi-search)
+(global-set-key (kbd "C-r") 'phi-search-backward)
+(require 'phi-replace)
+(global-set-key (kbd "M-%") 'phi-replace-query)
 
-(use-package markdown-mode+
-  :ensure t
-  :after markdown-mode)
+;; multiple cursors
+(require 'multiple-cursors)
+(global-set-key (kbd "C-c m c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-.") 'mc/skip-to-next-like-this)
+(global-set-key (kbd "C-,") 'mc/skip-to-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
-(use-package json-mode
-  :ensure t
-  :mode (("\\.json\\'" . json-mode)
-          ("\\.tmpl\\'" . json-mode)
-          ("\\.eslintrc\\'" . json-mode)))
+;; rainbow delimiters
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
-(use-package format-all
-  :ensure t
-  :defer t)
+;; shell-pop
+(require 'shell-pop)
+(setq shell-pop-shell-type (quote ("ansi-term" "*ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
+(setq term-buffer-maximum-size 0)
+(setq shell-pop-term-shell "/run/current-system/sw/bin/bash")
+(shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
+(global-set-key (kbd "C-x t") 'shell-pop)
 
-(use-package shell-pop
-  :ensure t
-  :defer t
-  :bind
-  ("C-x t" . shell-pop)
-  :config
-  (setq shell-pop-shell-type (quote ("ansi-term" "*ansi-term*" (lambda nil (ansi-term shell-pop-term-shell)))))
-  (setq term-buffer-maximum-size 0)
-  (setq shell-pop-term-shell "/run/current-system/sw/bin/bash")
-  ;; need to do this manually or not picked up by `shell-pop'
-  (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
+(defvar my-term-shell "/run/current-system/sw/bin/bash")
+(defadvice ansi-term (before force-bash)
+  "."
+  (interactive (list my-term-shell)))
+(ad-activate 'ansi-term)
+(global-set-key (kbd "<C-S-return>") 'ansi-term)
 
-(use-package logview
-  :ensure t
-  :mode ("syslog\\(?:\\.[0-9]+\\)" "\\.log\\(?:\\.[0-9]+\\)?\\'"))
+;;; undo-tree
+(require 'undo-tree)
+(global-undo-tree-mode)
+(setq undo-tree-visualizer-timestamps t)
+(setq undo-tree-visualizer-lazy-drawing nil)
+(setq undo-tree-auto-save-history t)
+(let ((undo-dir (expand-file-name "undo" user-emacs-directory)))
+  (setq undo-tree-history-directory-alist (list (cons "." undo-dir))))
+(delight '((undo-tree-mode nil "undo-tree")))
 
-(use-package easy-kill
-  :ensure t
-  :config
-  (global-set-key [remap kill-ring-save] 'easy-kill))
+;; yaml-mode
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 
-(use-package diff-hl
-  :ensure t
-  :config
-  (global-diff-hl-mode +1)
-  (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+;; nix-mode
+(require 'nix-mode)
+(add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
 
-(use-package magit
-  :ensure t
-  :bind (("C-x g" . magit-status)))
+(setq solarized-use-more-italic t)
+(setq x-underline-at-descent-line t)
+(load-theme 'solarized-gruvbox-dark t)
+(require ' whitespace)
+(delight '((whitespace-mode nil "wk")))
+(dolist (hook '(prog-mode-hook text-mode-hook))
+  (add-hook hook #'whitespace-mode))
 
-(use-package browse-at-remote
-  :ensure t
-  :defer t)
-
-(use-package git-timemachine
-  :ensure t
-  :defer t)
-
-(use-package zenburn-theme
-  :ensure t
-  :config
-  (load-theme 'zenburn t))
-
-(setq-default display-line-numbers 'directly
-  display-line-numbers-width 3
-  display-line-numbers-widen t)
-
-(setq-default indicate-empty-lines t)
-
-;;; Whitespace
-(use-package whitespace
-  :config
-  (dolist (hook '(prog-mode-hook text-mode-hook))
-    (add-hook hook #'whitespace-mode))
-  (add-hook 'before-save-hook #'whitespace-cleanup)
-  :diminish whitespace ""
-  :init
-  (setq whitespace-line-column 80) ;; limit line length
-  (setq whitespace-style '('tabs tab-mark)))(provide 'theme)
+(setq whitespace-style '('tabs tab-mark))
+(provide 'theme)
 
 (defun tf-toggle-show-trailing-whitespace ()
   "Toggle show trailing whitespace between t and nil."
   (interactive)
   (setq show-trailing-whitespace (not show-trailing-whitespace)))
 
-;; Mode line format
-(use-package mood-line
-  :ensure t
-  :defer t)
+(require 'simple-modeline)
+(add-hook 'after-init-hook 'simple-modeline-mode t)
 
-;; config changes made through the customize UI will be stored here
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(add-hook 'after-init-hook
+  (lambda ()
+    (require 'server)
+    (unless (server-running-p)
+      (server-start))))
 
 (when (file-exists-p custom-file)
   (load custom-file))
 
+(provide 'init)
+
 ;; Local Variables:
-;; flycheck-disabled-checkers: (emacs-lisp-checkdoc)
+;; coding: utf-8
+;; no-byte-compile: t
 ;; End:
 ;;; init.el ends here

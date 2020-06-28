@@ -1,4 +1,4 @@
-elpa
+elpa/*
 saveplace
 autosave
 places
@@ -23,3 +23,5 @@ transient
 /quelpa/melpa/
 /network-security.data
 /history
+undo/
+.savehist
