@@ -69,7 +69,7 @@
 (setq enable-recursive-minibuffers t)
 
 ;; font
-(set-face-attribute 'default nil :family "Monospace" :height 108)
+(set-face-attribute 'default nil :family "Monospace" :height 120)
 
 ;; Paragraphs
 (setq sentence-end "\\([。、！？]\\|……\\|[,.?!][]\"')}]*\\($\\|[ \t]\\)\\)[ \t\n]*")
@@ -164,6 +164,7 @@
   :blackout t)
 
 (use-package vterm
+  :demand t
   :straight nil)
 
 (use-package shell-pop
