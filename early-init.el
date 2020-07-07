@@ -1,16 +1,37 @@
-;;; early-init.el --- Emacs 27+ pre-initialisation config
+;;; early-init.el --- Emacs 27+ pre-initialisation config -*- lexical-binding: t -*-
 ;;; Commentary:
-
 ;;; Code:
 
-(setq package-enable-at-startup nil)
+(defconst my/start-time (current-time))
 
-;; Faster to disable these here (before they've been initialized)
-(push '(menu-bar-lines . 0) default-frame-alist)
-(push '(tool-bar-lines . 0) default-frame-alist)
-(push '(vertical-scroll-bars) default-frame-alist)
-(when (featurep 'ns)
-    (push '(ns-transparent-titlebar . t) default-frame-alist))
+(defmacro mt (&rest body)
+  "Measure the time it takes to evaluate BODY."
+  `(let ((time (current-time)))
+     ,@body
+     (message "%.06f" (float-time (time-since time)))))
+
+(defvar file-name-handler-alist-old file-name-handler-alist)
+
+(setq file-name-handler-alist nil
+      message-log-max 16384
+      gc-cons-threshold most-positive-fixnum   ;; Defer Garbage collection
+      gc-cons-percentage 1.0)
+
+(add-hook 'window-setup-hook
+          (lambda ()
+            (setq file-name-handler-alist file-name-handler-alist-old
+                  gc-cons-threshold 800000
+                  gc-cons-percentage 0.1)
+	    (garbage-collect)
+	    (message "Load time %.06f" (float-time (time-since my/start-time))))
+	  t)
+
+(tool-bar-mode   -1)
+(menu-bar-mode   -1)
+(scroll-bar-mode -1)
+
+(load
+  (expand-file-name "init.el" user-emacs-directory) nil 'nomessage 'nosuffix)
 
 (provide 'early-init)
 ;;; early-init.el ends here
