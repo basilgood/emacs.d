@@ -21,20 +21,9 @@
 ;;;;  Effectively replace use-package with straight-use-package
 ;;; https://github.com/raxod502/straight.el/blob/develop/README.md#integration-with-use-package
 (straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
+(setq  straight-use-package-by-default t)
+(setq use-package-always-defer t)
 
-;;;;  package.el
-;;; so package-list-packages includes them
-;; (require 'package)
-;; (add-to-list 'package-archives
-;;             '("melpa" . "https://melpa.org/packages/"))
-
-;; faster emacs start-up
-(let ((normal-gc-cons-threshold (* 20 1024 1024))
-      (init-gc-cons-threshold (* 128 1024 1024)))
-  (setq gc-cons-threshold init-gc-cons-threshold)
-  (add-hook 'emacs-startup-hook
-            (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 (setq ad-redefinition-action 'accept)
@@ -67,13 +56,19 @@
 (setq mouse-yank-at-point t)
 
 ;; No tabs
-(setq-default tab-width 2
-              indent-tabs-mode nil)
+(setq-default inhibit-startup-message t
+  initial-scratch-message ";; <3 "
+  inhibit-startup-message t
+  inhibit-startup-screen t
+  backward-delete-char-untabify-method nil
+  window-combination-resize t
+  tab-width 2
+  indent-tabs-mode nil)
 
 (prefer-coding-system 'utf-8)
+(setq enable-recursive-minibuffers t)
 
 ;; font
-;; (set-face-attribute 'default nil :family "DejaVuSansMono Nerd Font" :height 135)
 (set-face-attribute 'default nil :family "Monospace" :height 108)
 
 ;; Paragraphs
@@ -88,7 +83,7 @@
 
 ;; Highlight parenthesises
 (use-package paren
-  :ensure nil
+  :demand t
   :config (show-paren-mode)
   :init
   (setq show-paren-when-point-inside-paren t
@@ -96,11 +91,9 @@
 
 ;; The selected region of text can be deleted
 (use-package delsel
-  :ensure nil
-  :config (delete-selection-mode))
+  :hook ((prog-mode text-mode) . delete-selection-mode))
 
 (use-package windmove
-  :ensure nil
   :config
   (windmove-default-keybindings)
   (when (fboundp 'windmove-display-default-keybindings)
@@ -109,32 +102,20 @@
     (windmove-delete-default-keybindings)))
 
 (use-package winner
-  :ensure nil
+  :demand t
   :config
   (winner-mode +1))
 
 (use-package transpose-frame)
 (use-package buffer-move)
 (use-package ibuffer
-  :ensure nil
+  :demand t
   :bind (([remap list-buffers] . #'ibuffer)))
 
 ;; mode-line
 (line-number-mode)
 (column-number-mode)
 (setq mode-line-percent-position nil)
-
-(global-display-line-numbers-mode)
-(setq-default display-line-numbers 'visual
-              display-line-numbers-current-absolute t
-              display-line-numbers-width 3
-              display-line-numbers-widen t)
-(set-face-attribute 'line-number nil
-                    :font "Monospace"
-                    :background "default" :foreground "#5f5e6b")
-(set-face-attribute 'line-number-current-line nil
-                    :font "Monospace"
-                    :background "default" :foreground "yellow")
 
 ;; ediff
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -158,23 +139,27 @@
   (other-window 1))
 (global-set-key (kbd "C-x 3") 'split-and-follow-vertically)
 
+(defvar my-term-shell "/run/current-system/sw/bin/bash")
+(defadvice vterm (before force-bash)
+  "."
+  (interactive (list my-term-shell)))
+(ad-activate 'vterm)
+(global-set-key (kbd "<C-S-return>") 'vterm)
+
 ;; save cursor position
 (use-package saveplace
-  :ensure nil
+  :demand t
   :config
   (save-place-mode +1))
 
 ;; highlight current line
 (use-package hl-line
-  :ensure nil
+  :demand t
   :config (global-hl-line-mode))
 
 ;; Tips for next keystroke
 (use-package which-key
   :config
-  (setq which-key-show-early-on-C-h t)
-  (setq which-key-idle-delay most-positive-fixnum)
-  (setq which-key-idle-secondary-delay 1e-100)
   (which-key-mode +1)
   :blackout t)
 
@@ -189,14 +174,6 @@
   (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type)
   :bind
   (("C-x t" . shell-pop)))
-
-
-(defvar my-term-shell "/run/current-system/sw/bin/bash")
-(defadvice vterm (before force-bash)
-  "."
-  (interactive (list my-term-shell)))
-(ad-activate 'vterm)
-(global-set-key (kbd "<C-S-return>") 'vterm)
 
 (use-package async)
 (use-package dired
@@ -215,70 +192,68 @@
   (define-key dired-mode-map (kbd "<return>") 'dired-find-alternate-file)
   (require 'dired-x))
 
-(use-package ido
-  :straight nil
+(use-package selectrum
+  :straight (:host github :repo "raxod502/selectrum")
+  :defer t
   :init
-  (setq ido-enable-flex-matching t
-        ido-virtual-buffers t
-        ido-use-faces t
-        ido-auto-merge-work-directories-length -1
-        ido-default-file-method 'selected-window
-        ido-default-buffer-method 'selected-window
-        ido-everywhere 1)
+  (selectrum-mode +1))
+
+(use-package prescient
   :config
-  (ido-mode 1))
-(use-package ido-completing-read+
-  :after ido
+  (prescient-persist-mode +1)
+  (setq prescient-history-length 1000))
+
+(use-package selectrum-prescient
+  :straight (:host github :repo "raxod502/prescient.el"
+                   :files ("selectrum-prescient.el"))
+  :demand t
+  :after selectrum
   :config
-  (ido-ubiquitous-mode 1))
-(use-package ido-vertical-mode
-  :after ido
-  :init
-  (setq ido-vertical-define-keys 'C-n-C-p-up-down-left-right)
-  :config
-  (ido-vertical-mode 1))
-(use-package flx-ido
-  :after ido
-  :config
-  (flx-ido-mode))
-(use-package amx
-  :config
-  (amx-mode 1))
+  (selectrum-prescient-mode +1))
 
 (use-package projectile
-  :config
-  (progn
-    (setq projectile-completion-system 'ido)
-    (projectile-global-mode)))
+  :bind-keymap* (("C-c p" . projectile-command-map))
+  :bind (("s-n" . projectile-switch-project)
+         ( "s-/" . projectile-switch-to-buffer)
+         ("s-p" . projectile-find-file)
+         ("s-o" . projectile-switch-open-project))
+         :config
+         (setq projectile-completion-system 'default)
+         (projectile-mode +1))
 
 (use-package flycheck
-  :defines flycheck-mode-hook
+  :demand t
   :config
-  (add-hook 'after-init-hook #'global-flycheck-mode)
+  (setq flycheck-completion-system 'default
+        flycheck-idle-change-delay 1.0
+        flycheck-indication-mode 'left-fringe)
   (define-key flycheck-mode-map (kbd "M-n") 'flycheck-next-error)
-  (define-key flycheck-mode-map (kbd "M-p") 'flycheck-previous-error))
-
-(global-set-key (kbd "s-n") 'projectile-switch-project)
-(global-set-key (kbd "s-/") 'projectile-switch-to-buffer)
-(global-set-key (kbd "s-p") 'projectile-find-file)
-(global-set-key (kbd "s-o") 'projectile-switch-open-project)
+  (define-key flycheck-mode-map (kbd "M-p") 'flycheck-previous-error)
+  (global-flycheck-mode))
 
 (use-package magit
   :bind (("C-x g" . magit-status))
   :config
-  (setq magit-push-always-verify nil)
-  (setq git-commit-summary-max-length 50)
+  (setq-default magit-push-always-verify nil
+                git-commit-summary-max-length 50
+                magit-save-some-buffers nil
+                magit-process-popup-time 10
+                magit-diff-refine-hunk t
+                magit-restore-window-configuration t
+                magit-revert-buffers nil)
   (add-hook 'after-save-hook 'magit-after-save-refresh-status t))
 
 (use-package diff-hl
+  :demand t
   :init
+  (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   (setq diff-hl-fringe-bmp-function 'diff-hl-fringe-bmp-from-type)
   :config
-  (global-diff-hl-mode +1)
-  (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
-
+  (global-diff-hl-mode +1))
+  
 (use-package company
+  :demand t
   :blackout t
   :config
   (setq company-idle-delay 0.3)
@@ -299,6 +274,7 @@
   (("C-=" . er/expand-region)))
 
 (use-package wrap-region
+  :demand t
   :blackout t
   :config
   (wrap-region-global-mode t)
@@ -308,8 +284,16 @@
      ("*" "*")
      )))
 
+(use-package phi-search
+  :bind
+  ("C-s" . phi-search)
+  ("C-r". phi-search-backward)
+  ("M-%" . phi-replace-query)
+  :config
+  (require 'phi-replace))
+
 (use-package editorconfig
-  :diminish
+  :blackout t
   :config
   (editorconfig-mode 1))
 
@@ -327,7 +311,8 @@
   :hook ((prog-mode markdown-mode conf-mode) . whitespace-mode)
   :config
   (setq whitespace-style '(tabs tab-mark))
-  (provide 'theme))
+  (provide 'theme)
+  :blackout t)
 
 ;; theme
 (use-package ample-theme
@@ -340,6 +325,7 @@
 
 ;; smart-mode-line
 (use-package mood-line
+  :demand t
   :config
   (mood-line-mode))
 
