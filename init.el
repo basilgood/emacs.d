@@ -256,6 +256,7 @@
 (use-package company
   :demand t
   :blackout t
+  :init (setq company-backends '((company-files company-keywords company-capf company-dabbrev-code company-etags company-dabbrev)))
   :config
   (setq company-idle-delay 0.3)
   (setq company-tooltip-limit 10)
