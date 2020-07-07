@@ -57,13 +57,13 @@
 
 ;; No tabs
 (setq-default inhibit-startup-message t
-  initial-scratch-message ";; <3 "
-  inhibit-startup-message t
-  inhibit-startup-screen t
-  backward-delete-char-untabify-method nil
-  window-combination-resize t
-  tab-width 2
-  indent-tabs-mode nil)
+              initial-scratch-message ";; <3 "
+              inhibit-startup-message t
+              inhibit-startup-screen t
+              backward-delete-char-untabify-method nil
+              window-combination-resize t
+              tab-width 2
+              indent-tabs-mode nil)
 
 (prefer-coding-system 'utf-8)
 (setq enable-recursive-minibuffers t)
@@ -218,9 +218,9 @@
          ( "s-/" . projectile-switch-to-buffer)
          ("s-p" . projectile-find-file)
          ("s-o" . projectile-switch-open-project))
-         :config
-         (setq projectile-completion-system 'default)
-         (projectile-mode +1))
+  :config
+  (setq projectile-completion-system 'default)
+  (projectile-mode +1))
 
 (use-package flycheck
   :demand t
@@ -232,27 +232,67 @@
   (define-key flycheck-mode-map (kbd "M-p") 'flycheck-previous-error)
   (global-flycheck-mode))
 
+(use-package hydra
+  :ensure hydra
+  :init
+  (global-set-key
+   (kbd "C-x a")
+   (defhydra toggle (:color blue)
+     "toggle"
+     ("a" abbrev-mode "abbrev")
+     ("s" flyspell-mode "flyspell")
+     ("d" toggle-debug-on-error "debug")
+     ("f" auto-fill-mode "fill")
+     ("t" toggle-truncate-lines "truncate")
+     ("w" whitespace-mode "whitespace")
+     ("q" nil "cancel"))))
+
 (use-package magit
   :bind (("C-x g" . magit-status))
   :config
-  (setq-default magit-push-always-verify nil
-                git-commit-summary-max-length 50
-                magit-save-some-buffers nil
-                magit-process-popup-time 10
-                magit-diff-refine-hunk t
-                magit-restore-window-configuration t
-                magit-revert-buffers nil)
   (add-hook 'after-save-hook 'magit-after-save-refresh-status t))
 
-(use-package diff-hl
-  :demand t
+(setq magit-status-margin
+      '(t "%Y-%m-%d %H:%M " magit-log-margin-width t 18))
+(use-package git-gutter
+  :ensure t
   :init
-  (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
-  (setq diff-hl-fringe-bmp-function 'diff-hl-fringe-bmp-from-type)
-  :config
-  (global-diff-hl-mode +1))
-  
+  (global-git-gutter-mode +1))
+
+(global-set-key (kbd "M-g M-g") 'hydra-git-gutter/body)
+
+
+(use-package git-timemachine
+  :ensure t
+  )
+(defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
+                                      :hint nil)
+  "
+  Git gutter:
+    _j_: next hunk        _s_tage hunk     _q_uit
+    _k_: previous hunk    _r_evert hunk    _Q_uit and deactivate git-gutter
+    ^ ^                   _p_opup hunk
+    _h_: first hunk
+    _l_: last hunk        set start _R_evision
+  "
+  ("j" git-gutter:next-hunk)
+  ("k" git-gutter:previous-hunk)
+  ("h" (progn (goto-char (point-min))
+              (git-gutter:next-hunk 1)))
+  ("l" (progn (goto-char (point-min))
+              (git-gutter:previous-hunk 1)))
+  ("s" git-gutter:stage-hunk)
+  ("r" git-gutter:revert-hunk)
+  ("p" git-gutter:popup-hunk)
+  ("R" git-gutter:set-start-revision)
+  ("q" nil :color blue)
+  ("Q" (progn (git-gutter-mode -1)
+              ;; git-gutter-fringe doesn't seem to
+              ;; clear the markup right away
+              (sit-for 0.1)
+              (git-gutter:clear))
+   :color blue))
+
 (use-package company
   :demand t
   :blackout t
@@ -286,13 +326,10 @@
      ("*" "*")
      )))
 
-(use-package phi-search
-  :bind
-  ("C-s" . phi-search)
-  ("C-r". phi-search-backward)
-  ("M-%" . phi-replace-query)
+(use-package ctrlf
+  :demand t
   :config
-  (require 'phi-replace))
+  (ctrlf-mode +1))
 
 (use-package editorconfig
   :blackout t
