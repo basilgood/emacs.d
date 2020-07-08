@@ -388,6 +388,7 @@
 (use-package yaml-mode)
 (use-package nginx-mode)
 (use-package json-mode)
+(use-package markdown-mode)
 
 (use-package server
   :ensure nil
