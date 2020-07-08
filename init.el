@@ -78,7 +78,6 @@
 ;; Paragraphs
 (setq sentence-end "\\([。、！？]\\|……\\|[,.?!][]\"')}]*\\($\\|[ \t]\\)\\)[ \t\n]*")
 (setq sentence-end-double-space nil)
-(setq-default line-spacing 1)
 
 ;;; Macros
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -188,9 +187,6 @@
 
 (use-package flyspell
   :ensure nil
-  :hook
-  (text-mode . flyspell-mode)
-  (prog-mode . flyspell-prog-mode)
   :custom
   (flyspell-mode-map (make-sparse-keymap) "Disable all flyspell bindings")
   (ispell-program-name "aspell")
