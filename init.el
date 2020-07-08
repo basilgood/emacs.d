@@ -373,6 +373,12 @@
   :init
   (ctrlf-mode +1))
 
+(use-package anzu
+  :bind (("M-%" . anzu-query-replace)
+         ("C-M-%" . anzu-query-replace-regexp))
+  :config
+  (global-anzu-mode))
+
 (use-package editorconfig
   :blackout t
   :config
