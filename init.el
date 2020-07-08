@@ -387,6 +387,7 @@
 (use-package toml-mode)
 (use-package yaml-mode)
 (use-package nginx-mode)
+(use-package json-mode)
 
 (use-package server
   :ensure nil
