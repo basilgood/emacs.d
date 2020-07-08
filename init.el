@@ -62,6 +62,7 @@
 
 (prefer-coding-system 'utf-8)
 (setq enable-recursive-minibuffers t)
+(setq case-fold-search nil)
 
 ;; font
 (defun fontify-frame (frame)
