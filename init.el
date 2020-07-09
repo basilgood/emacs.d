@@ -85,17 +85,31 @@
 (fset 'split-horizontal-2-3
   [?\C-x ?3 ?\C-u ?1 ?5 ?\M-x ?e ?n ?l ?a ?r tab ?- ?h ?o ?r tab return])
 
-(use-package subword
-  :ensure nil
-  :config (global-subword-mode))
-
 (use-package paren
   :ensure nil
   :custom
   (show-paren-delay 0)
   (show-paren-when-point-inside-paren t)
-  (show-paren-when-point-in-periphery t)
   :config (show-paren-mode))
+
+(use-package electric
+  :ensure nil
+  :custom ; “Prettier ‘quotes’”
+  (electric-quote-replace-double t)
+  (electric-quote-context-sensitive t)
+  :config (electric-quote-mode))
+
+(use-package elec-pair
+  :ensure nil
+  :custom (electric-pair-skip-whitespace 'chomp)
+  :config
+  (setq electric-pair-pairs '(
+                               (?\{ . ?\})
+                               (?\( . ?\))
+                               (?\[ . ?\])
+                               (?\" . ?\")
+                               ))
+  (electric-pair-mode))
 
 (use-package delsel
   :ensure nil
@@ -115,18 +129,6 @@
 (use-package ibuffer
   :bind (([remap list-buffers] . #'ibuffer)))
 
-(use-package electric
-  :ensure nil
-  :custom ; “Prettier ‘quotes’”
-  (electric-quote-replace-double t)
-  (electric-quote-context-sensitive t)
-  :config (electric-quote-mode))
-
-(use-package elec-pair
-  :ensure t
-  :custom (electric-pair-skip-whitespace 'chomp)
-  :config (electric-pair-mode))
-
 ;; mode-line
 (line-number-mode)
 (column-number-mode)
@@ -134,7 +136,6 @@
 
 ;; ediff
 (use-package ediff
-  :ensure t
   :custom
   (ediff-keep-variants nil)
   (ediff-show-clashes-only t)
@@ -174,7 +175,8 @@
 
 (global-unset-key (kbd "C-z"))
 (use-package undo-tree
-  :config
+  :defer t
+  :init
   (setq undo-tree-enable-undo-in-region nil)
   (setq undo-tree-history-directory-alist
     `((".*" . ,temporary-file-directory)))
@@ -182,9 +184,8 @@
   (global-undo-tree-mode +1))
 
 ;; highlight current line
-(use-package hl-line
-  :demand t
-  :config (global-hl-line-mode))
+;; (use-package hl-line
+;;   :config (global-hl-line-mode))
 
 (use-package flyspell
   :ensure nil
@@ -199,13 +200,13 @@
   :config (bind-key [remap ispell-word] #'flyspell-correct-wrapper flyspell-mode-map))
 
 (use-package auto-correct
-  :delight
   :hook (flyspell-mode . auto-correct-mode)
   :custom (flyspell-use-global-abbrev-table-p t))
 
 ;; Tips for next keystroke
 (use-package which-key
-  :config
+  :defer t
+  :init
   (which-key-mode +1)
   :blackout t)
 
@@ -267,17 +268,14 @@
   (projectile-mode +1))
 
 (use-package flycheck
-  :demand t
+  :defer t
+  :init
+  (global-flycheck-mode)
   :config
-  (setq flycheck-completion-system 'default
-    flycheck-idle-change-delay 1.0
-    flycheck-indication-mode 'left-fringe)
   (define-key flycheck-mode-map (kbd "M-n") 'flycheck-next-error)
-  (define-key flycheck-mode-map (kbd "M-p") 'flycheck-previous-error)
-  (global-flycheck-mode))
+  (define-key flycheck-mode-map (kbd "M-p") 'flycheck-previous-error))
 
 (use-package hydra
-  :ensure hydra
   :init
   (global-set-key
     (kbd "C-x a")
@@ -346,9 +344,18 @@
   (setq company-tooltip-flip-when-above t))
 
 (use-package multiple-cursors
-  :bind
-  (("C-c n" . mc/mark-next-like-this)
-    ("C-c p" . mc/mark-previous-like-this)))
+  :bind (("C-<"     . mc/mark-previous-like-this)
+          ("C->"     . mc/mark-next-like-this)
+          ("C-+"     . mc/mark-next-like-this)
+          ("C-c C-<" . mc/mark-all-like-this))
+  :config
+  ;; From active region to multiple cursors:
+  (general-define-key
+    :preface "C-c m"
+    "r" 'set=rectangular-region-anchor
+    "c" 'mc/edit-lines
+    "e" 'mc/edit-ends-of-lines
+    "a" 'mc/edit-beginnings-of-lines))
 
 (use-package expand-region
   :blackout t
@@ -381,12 +388,42 @@
   :config
   (editorconfig-mode 1))
 
-(use-package nix-mode
-  :config
-  (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode)))
+(use-package web-mode
+  :mode (("\\.html\\'" . web-mode)
+         ("\\.html\\.erb\\'" . web-mode)
+         ("\\.mustache\\'" . web-mode)
+         ("\\.jinja\\'" . web-mode)
+         ("\\.js\\'" . web-mode)
+         ("\\.php\\'" . web-mode))
+  :init
+    (setq web-mode-engines-alist
+          '(("\\.js\\'"  . "html")
+          '("\\.jinja\\'"  . "django"))))
 
+(use-package mmm-mode
+  :commands mmm-mode
+  :config
+  (setq
+    mmm-global-mode 'buffers-with-submode-classes
+    mmm-submode-decoration-level 0)
+  (mmm-add-mode-ext-class 'js-mode "\\.js\\'" 'html)
+  (mmm-add-classes
+    '((js-html
+        :submode html-mode
+        :face mmm-declaration-submode-face
+        :front "[^a-zA-Z]html`" ;; regex to find the opening tag
+        :back "`"))) ;; regex to find the closing tag
+  (mmm-add-mode-ext-class 'js-mode nil 'js-html)
+  (setq mmm-global-mode 'maybe)
+  (use-package mmm-auto))
+
+(use-package add-node-modules-path
+  :hook ((js2-mode . add-node-modules-path)
+          (rjsx-mode . add-node-modules-path)
+          (js-mode . add-node-modules-path)))
 (use-package toml-mode)
 (use-package yaml-mode)
+(use-package nix-mode)
 (use-package nginx-mode)
 (use-package json-mode)
 (use-package markdown-mode)
@@ -405,13 +442,9 @@
   :blackout t)
 
 ;; theme
-(use-package ample-theme
-  :init (progn (load-theme 'ample t t)
-          (load-theme 'ample-flat t t)
-          (load-theme 'ample-light t t)
-          (enable-theme 'ample-flat))
+(use-package color-theme-sanityinc-tomorrow
   :defer t
-  :ensure t)
+  :init (load-theme 'sanityinc-tomorrow-night t))
 
 (use-package mood-line
   :demand t
