@@ -183,10 +183,6 @@
   (setq undo-tree-auto-save-history t)
   (global-undo-tree-mode +1))
 
-;; highlight current line
-;; (use-package hl-line
-;;   :config (global-hl-line-mode))
-
 (use-package flyspell
   :ensure nil
   :custom
