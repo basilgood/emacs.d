@@ -57,6 +57,7 @@
   inhibit-startup-screen t
   backward-delete-char-untabify-method nil
   window-combination-resize t
+  truncate-lines t
   tab-width 2
   indent-tabs-mode nil)
 
@@ -65,16 +66,7 @@
 (setq case-fold-search nil)
 
 ;; font
-(defun fontify-frame (frame)
- "FRAME."
- (interactive)
-  (if window-system
-    (progn
-      (if (> (x-display-pixel-width) 2000)
-        (set-frame-parameter frame 'font "DejaVuSansMono Nerd Font 14")
-        (set-frame-parameter frame 'font "DejaVuSansMono Nerd Font 11")))))
-(fontify-frame nil)
-(push 'fontify-frame after-make-frame-functions)
+(setq default-frame-alist '((font . "DejaVuSansMono Nerd Font-14")))
 
 ;; Paragraphs
 (setq sentence-end "\\([。、！？]\\|……\\|[,.?!][]\"')}]*\\($\\|[ \t]\\)\\)[ \t\n]*")
