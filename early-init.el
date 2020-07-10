@@ -14,7 +14,7 @@
 
 (setq file-name-handler-alist nil
       message-log-max 16384
-      gc-cons-threshold most-positive-fixnum   ;; Defer Garbage collection
+      gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 1.0)
 
 (add-hook 'window-setup-hook

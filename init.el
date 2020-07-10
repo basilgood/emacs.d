@@ -66,7 +66,7 @@
 (setq case-fold-search nil)
 
 ;; font
-(setq default-frame-alist '((font . "DejaVuSansMono Nerd Font-14")))
+(setq default-frame-alist '((font . "DejaVuSansMono Nerd Font-12")))
 
 ;; Paragraphs
 (setq sentence-end "\\([。、！？]\\|……\\|[,.?!][]\"')}]*\\($\\|[ \t]\\)\\)[ \t\n]*")
