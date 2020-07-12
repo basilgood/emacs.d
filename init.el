@@ -3,8 +3,7 @@
 ;;; Code:
 
 (setq package-enable-at-startup nil)
-;;;;  straight.el
-;;; https://github.com/raxod502/straight.el/blob/develop/README.md#getting-started
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -18,19 +17,21 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-;;;;  Effectively replace use-package with straight-use-package
-;;; https://github.com/raxod502/straight.el/blob/develop/README.md#integration-with-use-package
 (straight-use-package 'use-package)
 (setq  straight-use-package-by-default t)
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load-file custom-file)
 
 (setq ad-redefinition-action 'accept)
 
 (use-package no-littering)
 
-(use-package blackout
-  :straight (:host github :repo "raxod502/blackout"))
+(use-package package
+  :straight nil
+  :custom
+  (package-quickstart t)
+  (package-quickstart-file (no-littering-expand-var-file-name "package-quickstart.el")))
 
 (use-package bind-key)
 
@@ -61,12 +62,16 @@
   tab-width 2
   indent-tabs-mode nil)
 
+(with-eval-after-load 'display-line-numbers
+  (setq display-line-numbers-type 'relative
+        display-line-numbers-width-start t))
+
 (prefer-coding-system 'utf-8)
 (setq enable-recursive-minibuffers t)
 (setq case-fold-search nil)
 
 ;; font
-(setq default-frame-alist '((font . "DejaVuSansMono Nerd Font-12")))
+(setq default-frame-alist '((font . "DejaVuSansMono Nerd Font-11")))
 
 ;; Paragraphs
 (setq sentence-end "\\([。、！？]\\|……\\|[,.?!][]\"')}]*\\($\\|[ \t]\\)\\)[ \t\n]*")
@@ -78,41 +83,31 @@
   [?\C-x ?3 ?\C-u ?1 ?5 ?\M-x ?e ?n ?l ?a ?r tab ?- ?h ?o ?r tab return])
 
 (use-package paren
-  :ensure nil
-  :custom
-  (show-paren-delay 0)
-  (show-paren-when-point-inside-paren t)
+  :straight nil
+  :init
+  (setq show-paren-delay 0
+    show-paren-when-point-inside-paren t)
   :config (show-paren-mode))
 
-(use-package electric
-  :ensure nil
-  :custom ; “Prettier ‘quotes’”
-  (electric-quote-replace-double t)
-  (electric-quote-context-sensitive t)
-  :config (electric-quote-mode))
-
-(use-package elec-pair
-  :ensure nil
-  :custom (electric-pair-skip-whitespace 'chomp)
-  :config
-  (setq electric-pair-pairs '(
-                               (?\{ . ?\})
-                               (?\( . ?\))
-                               (?\[ . ?\])
-                               (?\" . ?\")
-                               ))
-  (electric-pair-mode))
-
 (use-package delsel
-  :ensure nil
+  :straight nil
   :config (delete-selection-mode))
 
+(use-package window :disabled
+  :no-require
+  :init
+  (setq display-buffer-alist
+   '((".*"
+      (display-buffer-reuse-window display-buffer-same-window)
+      (reusable-frames . t))))
+  (even-window-sizes t))
+
 (use-package windmove
-  :ensure nil
+  :straight nil
   :config (windmove-default-keybindings))
 
 (use-package winner
-  :ensure nil
+  :straight nil
   :config
   (winner-mode +1))
 
@@ -176,7 +171,7 @@
   (global-undo-tree-mode +1))
 
 (use-package flyspell
-  :ensure nil
+  :straight nil
   :custom
   (flyspell-mode-map (make-sparse-keymap) "Disable all flyspell bindings")
   (ispell-program-name "aspell")
@@ -195,8 +190,7 @@
 (use-package which-key
   :defer t
   :init
-  (which-key-mode +1)
-  :blackout t)
+  (which-key-mode +1))
 
 (use-package vterm
   :straight nil)
@@ -320,7 +314,6 @@
     :color blue))
 
 (use-package company
-  :blackout t
   :init
   (global-company-mode)
   (setq company-backends '((company-files company-keywords company-capf company-dabbrev-code company-etags company-dabbrev)))
@@ -346,13 +339,11 @@
     "a" 'mc/edit-beginnings-of-lines))
 
 (use-package expand-region
-  :blackout t
   :bind
   (("C-=" . er/expand-region)))
 
 (use-package wrap-region
   :demand t
-  :blackout t
   :config
   (wrap-region-global-mode t)
   (wrap-region-add-wrappers
@@ -372,7 +363,6 @@
   (global-anzu-mode))
 
 (use-package editorconfig
-  :blackout t
   :config
   (editorconfig-mode 1))
 
@@ -411,36 +401,44 @@
           (js-mode . add-node-modules-path)))
 (use-package toml-mode)
 (use-package yaml-mode)
+(use-package nix-shell
+  :straight nil
+  :no-require t
+  :init
+  (defun nix-shell ()
+    (interactive)
+    (let ((explicit-shell-file-name "shell.nix")
+          (explicit-shell-args nil))
+      (call-interactively 'shell))))
 (use-package nix-mode)
 (use-package nginx-mode)
 (use-package json-mode)
 (use-package markdown-mode)
 
 (use-package server
-  :ensure nil
+  :straight nil
   :config (server-mode))
 
 ;; show trailing whitespaces
 (use-package whitespace
-  :ensure nil
+  :straight nil
   :hook ((prog-mode markdown-mode conf-mode) . whitespace-mode)
   :config
   (setq whitespace-style '(tabs tab-mark))
-  (provide 'theme)
-  :blackout t)
+  (provide 'theme))
 
-;; theme
-(use-package color-theme-sanityinc-tomorrow
-  :defer t
-  :init (load-theme 'sanityinc-tomorrow-night t))
+(use-package doom-themes
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-one t)
+  (doom-themes-org-config))
 
 (use-package mood-line
   :demand t
   :config
   (mood-line-mode))
-
-(when (file-exists-p custom-file)
-  (load custom-file))
 
 (provide 'init)
 
