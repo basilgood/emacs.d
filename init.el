@@ -21,7 +21,8 @@
 (setq  straight-use-package-by-default t)
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load-file custom-file)
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 (setq ad-redefinition-action 'accept)
 
@@ -62,16 +63,30 @@
   tab-width 2
   indent-tabs-mode nil)
 
-(with-eval-after-load 'display-line-numbers
-  (setq display-line-numbers-type 'relative
-        display-line-numbers-width-start t))
+(global-auto-revert-mode 1)
+
+(use-package display-line-numbers
+  :straight nil
+  :hook
+  ((prog-mode yaml-mode systemd-mode) . display-line-numbers-mode)
+  :init
+  (setq display-line-numbers-type 'absolute
+    display-line-numbers-width-start t))
+
+(use-package hl-line
+  :straight nil
+  :hook
+  (after-init . global-hl-line-mode))
+;; (with-eval-after-load 'display-line-numbers
+;;   (setq display-line-numbers-type 'none
+;;         display-line-numbers-width-start t))
 
 (prefer-coding-system 'utf-8)
 (setq enable-recursive-minibuffers t)
 (setq case-fold-search nil)
 
 ;; font
-(setq default-frame-alist '((font . "DejaVuSansMono Nerd Font-11")))
+(setq default-frame-alist '((font . "DejaVuSansMono Nerd Font-11:weight=book:width=regular")))
 
 ;; Paragraphs
 (setq sentence-end "\\([。、！？]\\|……\\|[,.?!][]\"')}]*\\($\\|[ \t]\\)\\)[ \t\n]*")
@@ -84,14 +99,16 @@
 
 (use-package paren
   :straight nil
-  :init
-  (setq show-paren-delay 0
-    show-paren-when-point-inside-paren t)
-  :config (show-paren-mode))
+  :hook
+  (after-init . show-paren-mode)
+  :custom
+  (show-paren-delay 0)
+  (show-paren-when-point-inside-paren t))
 
 (use-package delsel
   :straight nil
-  :config (delete-selection-mode))
+  :hook
+  (after-init . delete-selection-mode))
 
 (use-package window :disabled
   :no-require
@@ -157,10 +174,11 @@
 
 ;; save cursor position
 (use-package saveplace
-  :config
-  (save-place-mode +1))
+  :hook
+  (after-init . save-place-mode))
 
 (global-unset-key (kbd "C-z"))
+
 (use-package undo-tree
   :defer t
   :init
@@ -193,7 +211,21 @@
   (which-key-mode +1))
 
 (use-package vterm
-  :straight nil)
+  :straight nil
+  :config
+  (defun turn-off-chrome ()
+    (hl-line-mode -1)
+    (display-line-numbers-mode -1))
+  :hook (vterm-mode . turn-off-chrome))
+
+(use-package vterm-toggle
+  :custom
+  (vterm-toggle-fullscreen-p nil "Open a vterm in another window.")
+  (vterm-toggle-scope 'projectile)
+  :bind (("C-c t" . #'vterm-toggle)
+         :map vterm-mode-map
+         ("s-t" . #'vterm) ; Open up new tabs quickly
+         ))
 
 (use-package shell-pop
   :config
@@ -222,7 +254,7 @@
   (require 'dired-x))
 
 (use-package selectrum
-  :straight (:host github :repo "raxod502/selectrum")
+  ;; :straight (:host github :repo "raxod502/selectrum")
   :defer t
   :init
   (selectrum-mode +1))
@@ -324,6 +356,53 @@
   (setq company-tooltip-align-annotations t)
   (setq company-tooltip-flip-when-above t))
 
+(use-package lsp-mode
+  :commands (lsp lsp-execute-code-action)
+  :hook ((js-mode . lsp-deferred)
+          (web-mode . lsp-deferred)
+         (lsp-mode . lsp-enable-which-key-integration)
+         (lsp-mode . lsp-diagnostics-modeline-mode))
+  :bind ("C-c C-c" . #'lsp-execute-code-action)
+  :config
+  (setq lsp-prefer-flymake nil) ;; Prefer using lsp-ui (flycheck) over flymake.
+
+  ;; ..
+  )
+
+(use-package lsp-ui
+  :custom
+  (lsp-ui-doc-delay 0.75)
+  (lsp-ui-doc-max-height 200)
+  :after lsp-mode)
+
+;; (use-package lsp-ui
+;;   :requires lsp-mode flycheck
+;;   :config
+
+;;   (setq lsp-ui-doc-enable t
+;;         lsp-ui-doc-use-childframe t
+;;         lsp-ui-doc-position 'top
+;;         lsp-ui-doc-include-signature t
+;;         lsp-ui-sideline-enable nil
+;;         lsp-ui-flycheck-enable t
+;;         lsp-ui-flycheck-list-position 'right
+;;         lsp-ui-flycheck-live-reporting t
+;;         lsp-ui-peek-enable t
+;;         lsp-ui-peek-list-width 60
+;;         lsp-ui-peek-peek-height 25)
+
+;;   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+(use-package company-lsp
+  :requires company
+  :config
+  (push 'company-lsp company-backends)
+
+   ;; Disable client-side cache because the LSP server does a better job.
+  (setq company-transformers nil
+        company-lsp-async t
+        company-lsp-cache-candidates nil))
+
 (use-package multiple-cursors
   :bind (("C-<"     . mc/mark-previous-like-this)
           ("C->"     . mc/mark-next-like-this)
@@ -392,13 +471,16 @@
         :front "[^a-zA-Z]html`" ;; regex to find the opening tag
         :back "`"))) ;; regex to find the closing tag
   (mmm-add-mode-ext-class 'js-mode nil 'js-html)
-  (setq mmm-global-mode 'maybe)
-  (use-package mmm-auto))
+  (setq mmm-global-mode 'maybe))
 
 (use-package add-node-modules-path
   :hook ((js2-mode . add-node-modules-path)
           (rjsx-mode . add-node-modules-path)
           (js-mode . add-node-modules-path)))
+
+(use-package js-mode
+  :straight nil
+  :hook (js-mode . flycheck-mode))
 (use-package toml-mode)
 (use-package yaml-mode)
 (use-package nix-shell
@@ -418,21 +500,18 @@
 (use-package server
   :straight nil
   :config (server-mode))
-
-;; show trailing whitespaces
 (use-package whitespace
-  :straight nil
-  :hook ((prog-mode markdown-mode conf-mode) . whitespace-mode)
+  :defer t
   :config
-  (setq whitespace-style '(tabs tab-mark))
-  (provide 'theme))
+  (setq whitespace-style '(face empty trailing tabs tab-mark))
+   :hook
+  (prog-mode . whitespace-mode))
 
 (use-package doom-themes
   :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-one t)
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (load-theme 'doom-opera t)
   (doom-themes-org-config))
 
 (use-package mood-line
