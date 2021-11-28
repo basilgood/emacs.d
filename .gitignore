@@ -8,3 +8,7 @@ straight/*
 undo
 .savehist
 custom.el
+/amx-items
+/elpa/
+/projectile-bookmarks.eld
+/savefile/
